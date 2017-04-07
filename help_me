@@ -1,0 +1,70 @@
+static const char		g_ls_color[] = {"\e[30m", "\e[31m", "\e[32m", "\e[33m",
+										"\e[34m", "\e[35m", "\e[36m", "\e[37m",
+										"\e[40m", "\e[41m", "\e[42m", "\e[43m",
+										"\e[44m", "\e[45m", "\e[46m", "\e[47m",
+										"\e[1m\e[30m", "\e[1m\e[31m",
+										"\e[1m\e[32m", "\e[1m\e[33m",
+										"\e[1m\e[34m", "\e[1m\e[35m",
+										"\e[1m\e[36m", "\e[1m\e[37m"};
+
+
+
+usage: ls [flags] [args...]
+
+                           a     black
+						   \e[30m
+                           b     red
+						   \e[31m
+                           c     green
+						   \e[32m
+                           d     brown
+						   \e[33m
+                           e     blue
+						   \e[34m
+                           f     magenta
+						   \e[35m
+                           g     cyan
+						   \e[36m
+                           h     light grey
+						   \e[37m
+                           A     bold black, usually shows up as dark grey
+                           B     bold red
+                           C     bold green
+                           D     bold brown, usually shows up as yellow
+                           E     bold blue
+                           F     bold magenta
+                           G     bold cyan
+                           H     bold light grey; looks like bright white
+                           x     default foreground or backgroung
+                           1.   directory
+                           2.   symbolic link
+                           3.   socket
+                           4.   pipe
+                           5.   executable
+                           6.   block special
+                           7.   character special
+                           8.   executable with setuid bit set
+                           9.   executable with setgid bit set
+                           10.  directory writable to others, with sticky bit
+                           11.  directory writable to others, without sticky bit
+
+listxattr(const char *, NULL, 0, XATTR_NOFOLLOW) to get @ , return must be > 0 to set this;
+
+getenv -> gives you a pointer to a localvariable
+
+opendir(const char *)             -> malloc for you -> return type DIR
+readdir(const DIR *)              -> malloc for you -> return type struct dirent
+stat(const char *, struct stat *) -> no malloc      -> return type int   (modify struct stat argv)
+
+
+
+
+step by step LS
+
+
+getcwd -> "."
+
+opendir
+while readdir != NULL
+	  for each readdir != NULL
+	  	  stat -> push_lst__
