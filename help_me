@@ -56,15 +56,13 @@ opendir(const char *)             -> malloc for you -> return type DIR
 readdir(const DIR *)              -> malloc for you -> return type struct dirent
 stat(const char *, struct stat *) -> no malloc      -> return type int   (modify struct stat argv)
 
-
-
-
-step by step LS
-
-
-getcwd -> "."
-
 opendir
 while readdir != NULL
 	  for each readdir != NULL
 	  	  stat -> push_lst__
+
+ell long format for list aka ls
+%-12s %-maxlength+1d %-maxlength+2s %-maxlength+3s [%-maxlength+2d || %3.1f%-2c] %-13s %s
+
+     -u      Use time of last access, instead of last modification of the file for sorting (-t) or long printing (-l).
+     -U      Use time of file creation, instead of last modification for sorting (-t) or long output (-l).

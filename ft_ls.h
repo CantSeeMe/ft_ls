@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 17:04:26 by jye               #+#    #+#             */
-/*   Updated: 2017/04/08 22:53:38 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/09 22:55:47 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,9 @@ typedef struct			s_file
 	t_stat		*cf_stat_;
 	t_passwd	*user_;
 	t_group		*group_;
-	char		sym_link[PATH_MAX];
-	char		perm[12];
+	char		human_time_[16];
+	char		sym_link_[PATH_MAX];
+	char		perm_[12];
 }						t_file;
 
 /*
@@ -65,6 +66,10 @@ typedef struct			s_file
 */
 int						get_opt(int ac, char **av, char *known_flag);
 
+/*
+** ripoff from ctime just for ls using ctime
+*/
+char					*time_format(time_t file_timespec, char *buf);
 /*
 ** lst
 */

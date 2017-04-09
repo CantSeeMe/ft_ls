@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 16:54:32 by jye               #+#    #+#             */
-/*   Updated: 2017/04/08 22:43:34 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/09 21:40:15 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,61 +36,25 @@ void	perm_format(register char *restrict perm, register mode_t st_mode)
 	0[perm] = get_file_type(st_mode);
 	1[perm] = st_mode & S_IRUSR ? 'r' : '-';
 	2[perm] = st_mode & S_IWUSR ? 'w' : '-';
-	if ((st_mode & (S_ISUID + S_IXUSR)) == (S_ISUID + S_IXUSR))
-		3[perm] = 's';
-	else if (st_mode & S_ISUID)
-		3[perm] = 'S';
-	else if (st_mode & S_IXUSR)
-		3[perm] = 'x';
-  	else
-		3[perm] = '-';
+	if (st_mode & S_ISUID)
+		3[perm] = (st_mode & (S_ISUID + S_IXUSR)) == (S_ISUID + S_IXUSR) \
+			? 's' : 'S';
+	else
+		3[perm] = st_mode & S_IXUSR ? 'x' : '-';
 	4[perm] = st_mode & S_IRGRP ? 'r' : '-';
 	5[perm] = st_mode & S_IWGRP ? 'w' : '-';
-	if ((st_mode & (S_ISGID + S_IXGRP)) == (S_ISGID + S_IXGRP))
-		6[perm] = 's';
-	else if (st_mode & S_ISGID)
-		6[perm] = 'S';
-	else if (st_mode & S_IXGRP)
-		6[perm] = 'x';
+	if (st_mode & S_ISGID)
+		6[perm] = (st_mode & (S_ISGID + S_IXGRP)) == (S_ISGID + S_IXGRP) \
+			? 's' : 'S';
 	else
-		6[perm] = '-';
+		6[perm] = st_mode & S_IXGRP ? 'x' : '-';
 	7[perm] = st_mode & S_IROTH ? 'r' : '-';
 	8[perm] = st_mode & S_IWOTH ? 'w' : '-';
-	if ((st_mode & (S_ISVTX + S_IXOTH)) == (S_ISVTX + S_IXOTH))
-		9[perm] = 't';
-	else if (st_mode & S_ISVTX)
-		9[perm] = 'T';
-	else if (st_mode & S_IXOTH)
-		9[perm] = 'x';
+	if (st_mode & S_ISVTX)
+		9[perm] = (st_mode & (S_ISVTX + S_IXOTH)) == (S_ISVTX + S_IXOTH) \
+			? 't' : 'T';
 	else
-		9[perm] = '-';
-}
-
-char	*time_format(time_t file_timespec)
-{
-	static time_t	cur_timespec = 0;
-	char			*human_time;
-
-	if (!cur_timespec)
-		time(&cur_timespec);
-	human_time = ctime(&file_timespec) + 4;
-	if (cur_timespec > file_timespec &&
-		IS_TOO_OLD(cur_timespec - file_timespec))
-	{
-		memmove(human_time + 8, human_time + 16, 4);
-		7[human_time] = 0x20;
-		12[human_time] = 0;
-	}
-	else if (cur_timespec < file_timespec &&
-			 IS_TOO_NEW(file_timespec - cur_timespec))
-	{
-		memmove(human_time + 8, human_time + 16, 4);
-		7[human_time] = 0x20;
-		12[human_time] = 0;
-	}
-	else
-		12[human_time] = 0;
-	return (strdup(human_time));
+		9[perm] = st_mode & S_IXOTH ? 'x' : '-';
 }
 
 int		main(int ac, char **av)
@@ -113,15 +77,12 @@ int		main(int ac, char **av)
 		lstat(cf->d_name, cf_stat);
 		file_data->cf_stat_ = cf_stat;
 		if (S_ISLNK(cf_stat->st_mode))
-			readlink(cf->d_name, file_data->sym_link, PATH_MAX);
-		perm_format(file_data->perm, cf_stat->st_mode);
+			readlink(cf->d_name, file_data->sym_link_, PATH_MAX);
+		perm_format(file_data->perm_, cf_stat->st_mode);
 		file_data->user_ = getpwuid(cf_stat->st_uid);
 		file_data->group_ = getgrgid(cf_stat->st_gid);
-//		file_data->time = time_format(cf_stat->st_mtimespec.tv_sec);
-		printf("%s %d %s %s %s %s\n", file_data->perm, cf_stat->st_nlink,
-			   file_data->user_->pw_name, file_data->group_->gr_name,
-			   time_format(cf_stat->st_mtimespec.tv_sec),
-			   cf->d_name);
+		time_format(cf_stat->st_mtimespec.tv_sec, file_data->human_time_);
+		printf("%s %s\n", file_data->perm_, cf->d_name);
 	}
 	return (0);
 }
