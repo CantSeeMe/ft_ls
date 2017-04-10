@@ -78,3 +78,4 @@ typedef char * acl_text_t;
 	  }
 NOTE:
 	 symbolic link has no extended attribute and no acl
+	 this is for linux only, man, what a bummer, don't think i'm gonna do it

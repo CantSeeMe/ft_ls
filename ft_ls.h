@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 17:04:26 by jye               #+#    #+#             */
-/*   Updated: 2017/04/10 11:38:46 by root             ###   ########.fr       */
+/*   Updated: 2017/04/10 18:44:42 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@
 # define CWD "."
 
 typedef struct winsize	t_winsize;
-typedef char			*t_acl_text;
 typedef struct dirent	t_dirent;
 typedef struct stat		t_stat;
 typedef struct passwd	t_passwd;
@@ -52,16 +51,23 @@ typedef struct			s_lst
 	void			*data;
 }						t_lst;
 
+typedef struct			s_cur_dir
+{
+	DIR		*cwd;
+	t_lst	*cwd_file;
+	char	*cur_path_name;
+	size_t	cwd_nb_file;
+}
+
 typedef struct			s_file
 {
 	t_dirent	*cur_file;
 	t_stat		*cur_file_stat;
 	t_passwd	*user;
 	t_group		*group;
-	char		*human_acl;
 	char		human_time[16];
 	char		sym_link[PATH_MAX];
-	char		perm[16];
+	char		perm[12];
 	int			acl;
 	int			xattr;
 }						t_file;
@@ -75,6 +81,12 @@ int						get_opt(int ac, char **av, char *known_flag);
 ** ripoff from ctime just for ls using ctime
 */
 char					*time_format(time_t file_timespec, char *buf);
+
+/*
+** permission format
+*/
+void					perm_format(register mode_t st_mode, register char *restrict perm);
+
 /*
 ** lst
 */
