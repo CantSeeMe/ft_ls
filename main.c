@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 16:54:32 by jye               #+#    #+#             */
-/*   Updated: 2017/04/09 21:40:15 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/10 03:09:36 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,8 +81,31 @@ int		main(int ac, char **av)
 		perm_format(file_data->perm_, cf_stat->st_mode);
 		file_data->user_ = getpwuid(cf_stat->st_uid);
 		file_data->group_ = getgrgid(cf_stat->st_gid);
+#ifdef __linux__
+		time_format(cf_stat->st_mtim.tv_sec, file_data->human_time_);
+#elif __APPLE__
 		time_format(cf_stat->st_mtimespec.tv_sec, file_data->human_time_);
-		printf("%s %s\n", file_data->perm_, cf->d_name);
+#endif
+		acl_t	acl = NULL;
+		
+		acl = acl_get_file(cf->d_name, ACL_TYPE_ACCESS);
+		if (acl && errno == ENODATA)
+		{
+			acl_free(acl);
+			acl = NULL;
+			errno = 0;
+		}
+		printf("%s%s %s\n", file_data->perm_, acl ? "+" : "", cf->d_name);
 	}
+	acl_t acl = NULL;
+	acl = acl_get_file("auteur", ACL_TYPE_ACCESS);
+	ssize_t t;
+	char *test =  acl_to_text(acl, &t);
+	test[t] = 0;
+	printf("\n%s\n", test);
+	printf("%p\n", test);
+	acl_free(test); // free abort on acl bullshit
+	acl_free(acl); // free segfault on acl bullshit
+		
 	return (0);
 }
