@@ -66,3 +66,15 @@ ell long format for list aka ls
 
      -u      Use time of last access, instead of last modification of the file for sorting (-t) or long printing (-l).
      -U      Use time of file creation, instead of last modification for sorting (-t) or long output (-l).
+
+
+HOWTO GET ACL:
+typedef char * acl_text_t;
+	  acl_t acl =  acl_get_file(pathname[PATH_MAX], ACL_TYPE_ACCESS);
+	  if (errno != ENODATA)
+	  {
+	      ssize_t    size;
+	      acl_text_t acl_text = acl_to_text(acl, &size);
+	  }
+NOTE:
+	 symbolic link has no extended attribute and no acl

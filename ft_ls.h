@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 17:04:26 by jye               #+#    #+#             */
-/*   Updated: 2017/04/10 03:05:45 by root             ###   ########.fr       */
+/*   Updated: 2017/04/10 11:38:46 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 
 # include <sys/ioctl.h> // window size
 # include <sys/stat.h> // stat
-# include <sys/types.h>
-# include <sys/acl.h>
-# include <sys/xattr.h>
-# include <uuid/uuid.h>
+# include <sys/types.h> // everything
+# include <sys/acl.h> // acl_get_file acl_to_text
+# include <sys/xattr.h> // listxattr
+# include <uuid/uuid.h> // pwuid gid
 # include <errno.h> // errno
 # include <limits.h>
 # include <time.h> // time
@@ -39,6 +39,7 @@
 # define CWD "."
 
 typedef struct winsize	t_winsize;
+typedef char			*t_acl_text;
 typedef struct dirent	t_dirent;
 typedef struct stat		t_stat;
 typedef struct passwd	t_passwd;
@@ -53,16 +54,16 @@ typedef struct			s_lst
 
 typedef struct			s_file
 {
-	t_dirent	*cf_;
-	t_stat		*cf_stat_;
-	t_passwd	*user_;
-	t_group		*group_;
+	t_dirent	*cur_file;
+	t_stat		*cur_file_stat;
+	t_passwd	*user;
+	t_group		*group;
 	char		*human_acl;
-	char		human_time_[16];
-	char		sym_link_[PATH_MAX];
-	char		perm_[16];
-	int			acl_bool;
-	int			ext_attr_;
+	char		human_time[16];
+	char		sym_link[PATH_MAX];
+	char		perm[16];
+	int			acl;
+	int			xattr;
 }						t_file;
 
 /*
