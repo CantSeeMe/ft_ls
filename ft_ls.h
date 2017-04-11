@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 17:04:26 by jye               #+#    #+#             */
-/*   Updated: 2017/04/10 18:44:42 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/11 02:37:25 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ typedef struct			s_cur_dir
 	t_lst	*cwd_file;
 	char	*cur_path_name;
 	size_t	cwd_nb_file;
-}
+}						t_cur_dir;
 
 typedef struct			s_file
 {
@@ -65,6 +65,7 @@ typedef struct			s_file
 	t_stat		*cur_file_stat;
 	t_passwd	*user;
 	t_group		*group;
+	char		*path_file;
 	char		human_time[16];
 	char		sym_link[PATH_MAX];
 	char		perm[12];
@@ -86,6 +87,11 @@ char					*time_format(time_t file_timespec, char *buf);
 ** permission format
 */
 void					perm_format(register mode_t st_mode, register char *restrict perm);
+
+
+/*
+** Merge sort
+*/
 
 /*
 ** lst

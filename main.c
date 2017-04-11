@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 16:54:32 by jye               #+#    #+#             */
-/*   Updated: 2017/04/10 18:23:18 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/11 02:41:09 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ int		main(int ac, char **av)
 			acl = acl_get_file(cf->d_name, ACL_TYPE_EXTENDED);
 #endif
 		}
-		printf("%s%s %s\n", file_data->perm, acl ? "+" : "", cf->d_name);
+		printf("%10lu %10lu %s\n", cf_stat->st_mtim.tv_sec, cf_stat->st_mtim.tv_nsec, cf->d_name);
 		if (acl)
 			acl_free(acl);
 	}
