@@ -6,7 +6,7 @@
 /*   By: root </var/spool/mail/root>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/11 23:16:01 by root              #+#    #+#             */
-/*   Updated: 2017/04/12 00:43:12 by root             ###   ########.fr       */
+/*   Updated: 2017/04/12 19:05:35 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 static void	usage(char *prog_name)
 {
+	(void)prog_name;
 	exit(EXIT_FAILURE);
 }
 
@@ -22,6 +23,7 @@ int			set_flag(int ac, char **av)
 	char	c;
 	int		flag;
 
+	flag = 0;
 	while ((c = get_opt(ac, av, LS_FLAGS)) != -1)
 	{
 		if (c == 'l')

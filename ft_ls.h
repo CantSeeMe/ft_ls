@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 17:04:26 by jye               #+#    #+#             */
-/*   Updated: 2017/04/12 02:22:34 by root             ###   ########.fr       */
+/*   Updated: 2017/04/12 20:59:39 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@
 # define DEFAULT "\e[0m"
 # define LS_FLAGS "lRratuUGfh1"
 # define CWD "."
+# define MIN_WIDTH 2
 
 typedef struct winsize	t_winsize;
 typedef struct dirent	t_dirent;
@@ -55,33 +56,35 @@ typedef struct			s_lst
 
 typedef struct			s_cdir
 {
-	DIR		*cwd;
-	t_lst	*cwd_file;
-	char	*cur_path_name;
-	size_t	cwd_nb_file;
+	DIR			*cwd;
+	t_lst		*cwd_file;
+	char		*cur_path_name;
+	size_t		cwd_nb_file;
+	size_t		max_len;
 }						t_cdir;
 
 typedef struct			s_file
 {
 	t_dirent   		*file;
 	t_stat	   		*file_stat;
-	t_passwd   		*user; // ell
-	t_group	   		*group; // ell
+//	char			*group_name;
+//	char			*user_name;
 //	struct timespec	time;
 	char	   		*path_file;
 	char	   		human_time[16]; // ell
 	char			sym_link[PATH_MAX]; //ell
 	char			perm[12]; // ell
 	int				acl; // ell
-	int				xattr; / ell
+	int				xattr; // ell
 }						t_file;
 
 typedef struct			s_lsenv
 {
-	char	*pname;
-	char	*color[13];
-	t_lst	*arg;
-	int		flag;
+	char		*pname;
+	char		*color[13];
+	t_lst		*arg;
+	t_winsize	winsize;
+	int			flag;
 }						t_lsenv;
 
 enum					e_flag
@@ -112,6 +115,12 @@ char					*get_arg(int ac, char **av);
 int						set_flag(int ac, char **av);
 
 /*
+** sort int / ascii
+*/
+t_lst					*sort_int(t_lst *stack, size_t slen);
+t_lst					*sort_ascii(t_lst **stack, size_t slen);
+
+/*
 ** ripoff from ctime just for ls
 */
 char					*time_format(time_t file_timespec, char *buf);
@@ -120,10 +129,6 @@ char					*time_format(time_t file_timespec, char *buf);
 ** permission format
 */
 void					perm_format(register mode_t st_mode, register char *restrict perm);
-
-/*
-** Merge sort
-*/
 
 /*
 ** lst

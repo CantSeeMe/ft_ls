@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/07 22:38:56 by jye               #+#    #+#             */
-/*   Updated: 2017/04/08 02:41:29 by root             ###   ########.fr       */
+/*   Updated: 2017/04/12 19:06:08 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ int			get_opt(int ac, char **av, char *known_flag)
 	static int	current_ac = 0;
 	char		c;
 
+	(void)ac;
 	if (current_ac == -1)
 		return (-1);
 	if (nextchar == NULL || *nextchar == 0)
