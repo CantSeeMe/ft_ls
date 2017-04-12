@@ -6,60 +6,95 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 16:54:32 by jye               #+#    #+#             */
-/*   Updated: 2017/04/11 02:41:09 by root             ###   ########.fr       */
+/*   Updated: 2017/04/12 02:22:37 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
+t_cdir	*init_dir__(char *path, t_lsenv *ls)
+{
+	t_cdir	*new_;
+
+	errno = 0;
+	if ((new_ = malloc(sizeof(t_cdir))) == NULL)
+		return (NULL);
+	if ((new_->cwd = opendir(path)) == NULL)
+	{
+		perror(ls->pname);
+		free(new_);
+		return (NULL);
+	}
+	if ((new_->cur_path_name = strdup(path)) == NULL)
+	{
+		perror(ls->pname);
+		free(new_->cwd);
+		free(new_);
+		return (NULL);
+	}
+	new_->cwd_file = NULL;
+	return (new_);
+}
+
+void	read_cwd(t_cdir *cdir)
+{
+	t_lst		*cwd_file;
+	t_file		*file_data;
+	t_dirent	*cfile;
+	t_stat		*fstat;
+	t_
+}
+
+void	list_dir_(char *path, t_lsenv *ls)
+{
+	t_cdir	*cdir;
+
+	if ((cdir = init_dir__(path, ls)) == NULL)
+		return ;
+	/* if (ls->flag & (mtim | atim | ctim | color | ell)) */
+	/* 	readell_cwd(cdir); */
+	/* else */
+		read_cwd(cdir);
+	if (ls->flag & no_sort)
+	{
+		/* print_list(cdir, ls); */
+		return ;
+	}
+	/* sort_list(path, ls); */
+	/* print_list(cdir, ls); */
+}
+
+void	list_dir(char *path, t_lsenv *ls)
+{
+	if (S_ISDIR(fstat->st_mode))
+	{
+		/* if (flag & recursive) */
+		/* 	rlist_dir_(path, flag); */
+		/* else */
+		list_dir_(path, ls);
+		return ;
+	}
+}
+
+/* void	set_color(t_lsenv *ls) */
+/* { */
+/* 	char	*lscolors; */
+
+/* 	lscolors = getenv("LSCOLORS"); */
+/* } */
+
 int		main(int ac, char **av)
 {
-	DIR			*cwd;
-	t_dirent	*cf;
-	t_stat		*cf_stat;
-	t_file		*file_data;
+	char	*args;
+	t_lsenv	ls;
 
-	cwd = opendir(CWD);
-	(void)ac;
-	(void)av;
-	while ((cf = readdir(cwd)) != NULL)
-	{
-		file_data = malloc(sizeof *file_data);
-		memset(file_data, 0, sizeof *file_data);
-		file_data->cur_file = cf;
-		cf_stat = malloc(sizeof *cf_stat);
-		memset(cf_stat, 0, sizeof *cf_stat);
-		lstat(cf->d_name, cf_stat);
-		file_data->cur_file_stat = cf_stat;
-		if (S_ISLNK(cf_stat->st_mode))
-			readlink(cf->d_name, file_data->sym_link, PATH_MAX);
-		perm_format(cf_stat->st_mode, file_data->perm);
-		file_data->user = getpwuid(cf_stat->st_uid);
-		file_data->group = getgrgid(cf_stat->st_gid);
-#ifdef __linux__
-		time_format(cf_stat->st_mtim.tv_sec, file_data->human_time);
-#elif __APPLE__
-		time_format(cf_stat->st_mtimespec.tv_sec, file_data->human_time);
-#endif
-		acl_t	acl = NULL;
-		if (!S_ISLNK(cf_stat->st_mode))
-		{
-#ifdef __linux__
-			errno = 0;
-			acl = acl_get_file(cf->d_name, ACL_TYPE_ACCESS);
-			if (acl && errno == ENODATA)
-			{
-				acl_free(acl);
-				acl = NULL;
-				errno = 0;
-			}
-#elif __APPLE__
-			acl = acl_get_file(cf->d_name, ACL_TYPE_EXTENDED);
-#endif
-		}
-		printf("%10lu %10lu %s\n", cf_stat->st_mtim.tv_sec, cf_stat->st_mtim.tv_nsec, cf->d_name);
-		if (acl)
-			acl_free(acl);
-	}
+	ls.flag = set_flag(ac, av);
+	ls.arg = NULL;
+/* #ifdef __APPLE__ */
+/* 	if (ls.flag & color) */
+/* 		set_color(&ls); */
+/* #endif */
+	if ((args = get_arg(ac, av)) == NULL)
+		list_dir(CWD, &ls);
 	return (0);
 }

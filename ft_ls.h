@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 17:04:26 by jye               #+#    #+#             */
-/*   Updated: 2017/04/11 02:37:25 by root             ###   ########.fr       */
+/*   Updated: 2017/04/12 02:22:34 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@
 # define SIX_MONTH_SEC 15552000
 # define IS_TOO_OLD(timespec) ((timespec) > SIX_MONTH_SEC)
 # define IS_TOO_NEW(timespec) ((timespec) > SIX_MONTH_SEC)
+# define DEFAULT "\e[0m"
+# define LS_FLAGS "lRratuUGfh1"
 # define CWD "."
 
 typedef struct winsize	t_winsize;
@@ -51,35 +53,66 @@ typedef struct			s_lst
 	void			*data;
 }						t_lst;
 
-typedef struct			s_cur_dir
+typedef struct			s_cdir
 {
 	DIR		*cwd;
 	t_lst	*cwd_file;
 	char	*cur_path_name;
 	size_t	cwd_nb_file;
-}						t_cur_dir;
+}						t_cdir;
 
 typedef struct			s_file
 {
-	t_dirent	*cur_file;
-	t_stat		*cur_file_stat;
-	t_passwd	*user;
-	t_group		*group;
-	char		*path_file;
-	char		human_time[16];
-	char		sym_link[PATH_MAX];
-	char		perm[12];
-	int			acl;
-	int			xattr;
+	t_dirent   		*file;
+	t_stat	   		*file_stat;
+	t_passwd   		*user; // ell
+	t_group	   		*group; // ell
+//	struct timespec	time;
+	char	   		*path_file;
+	char	   		human_time[16]; // ell
+	char			sym_link[PATH_MAX]; //ell
+	char			perm[12]; // ell
+	int				acl; // ell
+	int				xattr; / ell
 }						t_file;
 
-/*
-** get_opt
-*/
-int						get_opt(int ac, char **av, char *known_flag);
+typedef struct			s_lsenv
+{
+	char	*pname;
+	char	*color[13];
+	t_lst	*arg;
+	int		flag;
+}						t_lsenv;
+
+enum					e_flag
+{
+	ell = 1,
+	recursive = 2,
+	rever_sort = 4,
+	show_all = 8,
+	mtim = 16,
+	atim = 32,
+	ctim = 64,
+	human_size = 128,
+	no_sort = 256,
+	one = 512,
+	color = 1024
+};
 
 /*
-** ripoff from ctime just for ls using ctime
+** ls
+*/
+void					list_dir(char *path, t_lsenv *ls);
+
+/*
+** get_ arg / opt
+*/
+int						get_opt(int ac, char **av, char *known_flag);
+char					*get_arg(int ac, char **av);
+int						set_flag(int ac, char **av);
+
+/*
+** ripoff from ctime just for ls
 */
 char					*time_format(time_t file_timespec, char *buf);
 
@@ -87,7 +120,6 @@ char					*time_format(time_t file_timespec, char *buf);
 ** permission format
 */
 void					perm_format(register mode_t st_mode, register char *restrict perm);
-
 
 /*
 ** Merge sort
