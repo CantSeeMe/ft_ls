@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 17:04:26 by jye               #+#    #+#             */
-/*   Updated: 2017/04/13 02:22:06 by root             ###   ########.fr       */
+/*   Updated: 2017/04/13 20:17:57 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,10 +115,15 @@ char					*get_arg(int ac, char **av);
 int						set_flag(int ac, char **av);
 
 /*
-** sort int / ascii
+** sort int / ascii using merge
 */
 t_lst					*sort_int(t_lst *stack, size_t slen);
 t_lst					*sort_ascii(t_lst **stack, size_t slen);
+
+/*
+** print_list / ell / one
+*/
+void					print_list(t_cdir *cdir, t_lsenv *ls);
 
 /*
 ** ripoff from ctime just for ls

@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 16:54:32 by jye               #+#    #+#             */
-/*   Updated: 2017/04/13 19:51:21 by root             ###   ########.fr       */
+/*   Updated: 2017/04/13 21:10:26 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,8 @@ void	read_cwd(t_cdir *cdir, t_lsenv *ls)
 	while ((cfile = readdir(cwd)) != NULL)
 	{
 		errno = 0;
+		if (cfile->d_name[0] == '.' && !(ls->flag & show_all))
+			continue ;
 		flen = strlen(cfile->d_name);
 		if (cdir->max_len < flen)
 			cdir->max_len = flen;
@@ -141,7 +143,7 @@ void	list_dir_(char *path, t_lsenv *ls)
 		return ;
 	}
 	cdir->cwd_file = sort_ascii(&cdir->cwd_file, cdir->cwd_nb_file);
-//	print_list(cdir, ls);
+	print_list(cdir, ls);
 }
 
 void	list_dir(char *path, t_lsenv *ls)
@@ -172,20 +174,6 @@ int		main(int ac, char **av)
 	ls.arg = NULL;
 	ls.pname = av[0];
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &ls.winsize);
-	/* t_lst	*test = init_lst__(strdup("test0")); */
-	/* append_lst__(test, strdup("append1")); */
-	/* append_lst__(test, strdup("append2")); */
-	/* append_lst__(test, strdup("append3")); */
-	/* append_lst__(test, strdup("append4")); */
-	/* append_lst__(test->next, strdup("append5")); */
-	/* push_lst__(&test->next, strdup("push1")); */
-	/* push_lst__(&test->next->next->next, strdup("push2")); */
-	/* push_lst__(&test->next->next->next->next->next->next, strdup("push3")); */
-	/* while (test) */
-	/* { */
-	/* 	printf("%s\n", test->data); */
-	/* 	test = test->next; */
-	/* } */
 /* #ifdef __APPLE__ */
 /* 	if (ls.flag & color) */
 /* 		set_color(&ls); */
