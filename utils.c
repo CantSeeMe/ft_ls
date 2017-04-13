@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/03 19:56:36 by jye               #+#    #+#             */
-/*   Updated: 2017/04/07 17:41:38 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/13 19:26:04 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ t_lst	*init_lst__(void *data)
 void	push_lst__(t_lst **node, void *data)
 {
 	t_lst	*high_node;
+//	t_lst	*low_node;
 	t_lst	*new_node;
 	t_lst	*cur_node;
 
@@ -35,14 +36,15 @@ void	push_lst__(t_lst **node, void *data)
 		exit(1);
 	cur_node = *node;
 	if (cur_node)
-	{
 		high_node = cur_node->prev;
-		cur_node->prev = new_node;
-	}
 	else
 		high_node = NULL;
-	new_node->next = cur_node;
 	new_node->prev = high_node;
+	if (high_node)
+		high_node->next = new_node;
+	if (cur_node)
+		cur_node->prev = new_node;
+	new_node->next = cur_node;
 	*node = new_node;
 }
 
