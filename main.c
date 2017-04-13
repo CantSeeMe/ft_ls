@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 16:54:32 by jye               #+#    #+#             */
-/*   Updated: 2017/04/12 19:24:51 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/13 03:26:00 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ t_cdir	*init_dir__(char *path, t_lsenv *ls)
 	errno = 0;
 	if ((new_ = malloc(sizeof(t_cdir))) == NULL)
 		return (NULL);
+	memset(new_, 0, sizeof(t_cdir));
 	if ((new_->cwd = opendir(path)) == NULL)
 	{
 		perror(ls->pname);
@@ -142,7 +143,7 @@ void	list_dir_(char *path, t_lsenv *ls)
 	/* if (ls->flag & (atim | ctim | mtim)) */
 	/* 	sort_int(, ls); */
 	/* else */
-	sort_ascii(&cdir->cwd_file, cdir->cwd_nb_file);
+	cdir->cwd_file = sort_ascii(&cdir->cwd_file, cdir->cwd_nb_file);
 	/* print_list(cdir, ls); */
 }
 

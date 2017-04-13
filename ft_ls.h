@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 17:04:26 by jye               #+#    #+#             */
-/*   Updated: 2017/04/12 20:59:39 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/13 02:22:06 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,9 +67,9 @@ typedef struct			s_file
 {
 	t_dirent   		*file;
 	t_stat	   		*file_stat;
-//	char			*group_name;
-//	char			*user_name;
-//	struct timespec	time;
+//	char			*group_name; // strdup if NULL show gid
+//	char			*user_name; // strdup, if NULL show uid
+//	struct timespec	time; // which st_*tim to use;
 	char	   		*path_file;
 	char	   		human_time[16]; // ell
 	char			sym_link[PATH_MAX]; //ell
