@@ -6,29 +6,29 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 17:04:26 by jye               #+#    #+#             */
-/*   Updated: 2017/04/13 20:17:57 by root             ###   ########.fr       */
+/*   Updated: 2017/04/14 22:53:57 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_LS_H
 # define FT_LS_H
 
-# include <sys/ioctl.h> // window size
-# include <sys/stat.h> // stat
-# include <sys/types.h> // everything
-# include <sys/acl.h> // acl_get_file acl_to_text
-# include <sys/xattr.h> // listxattr
-# include <uuid/uuid.h> // pwuid gid
-# include <errno.h> // errno
+# include <sys/ioctl.h>
+# include <sys/stat.h>
+# include <sys/types.h>
+# include <sys/acl.h>
+# include <sys/xattr.h>
+# include <uuid/uuid.h>
+# include <errno.h>
 # include <limits.h>
-# include <time.h> // time
-# include <dirent.h> // open dir
+# include <time.h>
+# include <dirent.h>
 # include <pwd.h>
 # include <grp.h>
-# include <stdlib.h> // malloc
-# include <unistd.h> // system calls
-# include <stdio.h> // strerror
-# include <string.h> // forbidden function #memset
+# include <stdlib.h>
+# include <unistd.h>
+# include <stdio.h>
+# include <string.h>
 
 //#include <libft.h>
 //#include <ft_printf.h>
@@ -39,7 +39,7 @@
 # define DEFAULT "\e[0m"
 # define LS_FLAGS "lRratuUGfh1"
 # define CWD "."
-# define MIN_WIDTH 2
+# define MIN_WIDTH 1
 
 typedef struct winsize	t_winsize;
 typedef struct dirent	t_dirent;
@@ -71,18 +71,19 @@ typedef struct			s_file
 //	char			*user_name; // strdup, if NULL show uid
 //	struct timespec	time; // which st_*tim to use;
 	char	   		*path_file;
-	char	   		human_time[16]; // ell
-	char			sym_link[PATH_MAX]; //ell
-	char			perm[12]; // ell
-	int				acl; // ell
-	int				xattr; // ell
+	char	   		human_time[16];
+	char			sym_link[PATH_MAX];
+	char			perm[12];
+	int				acl;
+	int				xattr;
 }						t_file;
 
 typedef struct			s_lsenv
 {
 	char		*pname;
 	char		*color[13];
-	t_lst		*arg;
+	t_lst		*file;
+	t_lst		*dir;
 	t_winsize	winsize;
 	int			flag;
 }						t_lsenv;
@@ -99,13 +100,16 @@ enum					e_flag
 	human_size = 128,
 	no_sort = 256,
 	one = 512,
-	color = 1024
+	color = 1024,
+	show_folder = 2048
 };
 
 /*
 ** ls
 */
-void					list_dir(char *path, t_lsenv *ls);
+void					set_ls_args(t_lsenv *ls, int ac, char **av);
+//void					list_dir(t_lsenv *ls);
+void					list_args(t_lsenv *ls);
 
 /*
 ** get_ arg / opt
@@ -117,6 +121,11 @@ int						set_flag(int ac, char **av);
 /*
 ** sort int / ascii using merge
 */
+//t_lst					*merge_tfile();
+//t_lst					*merge_rtfile();
+//t_lst					*merge_tfile_time();
+//t_lst					*merge_rtfile_time();
+
 t_lst					*sort_int(t_lst *stack, size_t slen);
 t_lst					*sort_ascii(t_lst **stack, size_t slen);
 

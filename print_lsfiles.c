@@ -6,7 +6,7 @@
 /*   By: root <jye@student.42.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/13 20:03:32 by root              #+#    #+#             */
-/*   Updated: 2017/04/13 21:44:35 by root             ###   ########.fr       */
+/*   Updated: 2017/04/14 23:12:37 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,18 +14,22 @@
 
 void	print_list_(t_cdir *cdir, t_lsenv *ls)
 {
+	t_lst	*t;
+	t_file	*z;
 	int		x;
+	int		o;
 	int		i;
 	int		pad;
-	t_lst	*t;
 
 	x = ls->winsize.ws_col / (cdir->max_len + MIN_WIDTH);
+//	o = x * cdir->cwd_nb_file /;
+//	printf("%d\n", o);
 	pad = cdir->max_len + MIN_WIDTH;
-	printf("x:%d  maxn_len:%lu ws_col:%lu\n", x, cdir->max_len + MIN_WIDTH, ls->winsize.ws_col);
 	t = cdir->cwd_file;
+	i = 0;
 	while (t)
 	{
-		t_file *z = (t_file *)t->data;
+		z = (t_file *)t->data;
 		printf("%*s", -pad, z->file->d_name);
 		++i;
 		t = t->next;
@@ -37,7 +41,6 @@ void	print_list_(t_cdir *cdir, t_lsenv *ls)
 	}
 	if (i)
 		printf("\n");
-		
 }
 
 void	print_list(t_cdir *cdir, t_lsenv *ls)
