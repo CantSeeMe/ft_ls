@@ -6,24 +6,26 @@
 /*   By: root <jye@student.42.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/13 20:03:32 by root              #+#    #+#             */
-/*   Updated: 2017/04/14 23:12:37 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/15 03:15:09 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
+
+char	**format();
 
 void	print_list_(t_cdir *cdir, t_lsenv *ls)
 {
 	t_lst	*t;
 	t_file	*z;
 	int		x;
-	int		o;
 	int		i;
 	int		pad;
 
 	x = ls->winsize.ws_col / (cdir->max_len + MIN_WIDTH);
-//	o = x * cdir->cwd_nb_file /;
-//	printf("%d\n", o);
+	int skip = ((cdir->cwd_nb_file / x) + 1);
+	int o = cdir->cwd_nb_file / skip;
+//	char **
 	pad = cdir->max_len + MIN_WIDTH;
 	t = cdir->cwd_file;
 	i = 0;
@@ -33,7 +35,7 @@ void	print_list_(t_cdir *cdir, t_lsenv *ls)
 		printf("%*s", -pad, z->file->d_name);
 		++i;
 		t = t->next;
-		if (i == x)
+		if (i == o)
 		{
 			i = 0;
 			printf("\n");

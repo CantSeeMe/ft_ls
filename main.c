@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 16:54:32 by jye               #+#    #+#             */
-/*   Updated: 2017/04/14 23:14:26 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/15 03:15:05 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,7 +149,7 @@ void	list_dir_(t_lsenv *ls)
 	print_list(cdir, ls);
 }
 
-void	print_args_(t_cdir *cdir, t_lsenv *ls)
+void	print_args_(t_cdir *cdir, t_lsenv *ls) // broken
 {
 	int		x;
 	int		i;
@@ -165,7 +165,7 @@ void	print_args_(t_cdir *cdir, t_lsenv *ls)
 	while (t)
 	{
 		t_file *z = (t_file *)t->data;
-		printf("%*s", -pad, z->path_file);
+		printf("%*s", -pad, z->file_name);
 		++i;
 		t = t->next;
 		if (i == o)
@@ -195,8 +195,8 @@ void	list_args(t_lsenv *ls)
 	{
 		file = malloc(sizeof *file);
 		memset(file, 0, sizeof *file);
-		file->path_file = (char *)args->data;
-		slen = strlen(file->path_file);
+		file->file_name = (char *)args->data;
+		slen = strlen(file->file_name);
 		if (cdir->max_len < slen)
 			cdir->max_len = slen;
 		file->file_stat = malloc(sizeof(t_stat));
@@ -218,7 +218,6 @@ void	list_dir(t_lsenv *ls)
 		if (ls->dir)
 			printf("\n");
 	}
-	printf("%p %p\n", ls->file, ls->dir);
 	while (ls->dir)
 	{
 		if (ls->flag & show_folder)

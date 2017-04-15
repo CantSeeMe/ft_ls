@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 18:58:37 by jye               #+#    #+#             */
-/*   Updated: 2017/04/14 23:17:12 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/15 01:12:35 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,12 +82,14 @@ static t_lst	*sort_(t_lst **stack, size_t slen)
 	return (merge(a, b));
 }
 
-static void		check_args(t_lsenv *ls, t_lst *args)
+static int		set_ls_args_(t_lsenv *ls, t_lst *args)
 {
 	t_lst	*error;
 	t_stat	fstat;
 
 	error = NULL;
+	if (args == NULL)
+		return (1);
 	while (args)
 	{
 		if ((lstat(args->data, &fstat)) == -1)
@@ -103,6 +105,7 @@ static void		check_args(t_lsenv *ls, t_lst *args)
 		dprintf(2, "%s: %s: %s\n", ls->pname, error->data, strerror(ENOENT));
 		pop_lst__(&error, NULL);
 	}
+	return (0);
 }
 
 void			set_ls_args(t_lsenv *ls, int ac, char **av)
@@ -123,12 +126,11 @@ void			set_ls_args(t_lsenv *ls, int ac, char **av)
 		push_lst__(&args, path);
 		++slen;
 	}
-	if (args == NULL)
-		return ;
-	args = sort_(&args, slen);
-	check_args(ls, args);
-	if (ls->file == NULL && ls->dir == NULL) //BUG __LINE__ == 101
+	if (!(ls->flag & no_sort) && args)
+		args = sort_(&args, slen);
+	if (set_ls_args_(ls, args))
 		push_lst__(&ls->dir, CWD);
-	else if ((ls->dir && ls->file) || (ls->dir->next)) // SIEGV
+	else if ((ls->dir && ls->file) ||
+			(ls->dir &&ls->dir->next))
 		ls->flag |= show_folder;
 }

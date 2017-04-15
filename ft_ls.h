@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 17:04:26 by jye               #+#    #+#             */
-/*   Updated: 2017/04/14 22:53:57 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/15 03:15:07 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,10 @@
 # define SIX_MONTH_SEC 15552000
 # define IS_TOO_OLD(timespec) ((timespec) > SIX_MONTH_SEC)
 # define IS_TOO_NEW(timespec) ((timespec) > SIX_MONTH_SEC)
-# define DEFAULT "\e[0m"
+//# define DEFAULT "\e[0m"
 # define LS_FLAGS "lRratuUGfh1"
 # define CWD "."
-# define MIN_WIDTH 1
+# define MIN_WIDTH 2
 
 typedef struct winsize	t_winsize;
 typedef struct dirent	t_dirent;
@@ -65,12 +65,13 @@ typedef struct			s_cdir
 
 typedef struct			s_file
 {
-	t_dirent   		*file;
-	t_stat	   		*file_stat;
+//	t_dirent   		*file;
+	t_stat	   		*stat;
 //	char			*group_name; // strdup if NULL show gid
 //	char			*user_name; // strdup, if NULL show uid
 //	struct timespec	time; // which st_*tim to use;
-	char	   		*path_file;
+	char			*name;
+	char	   		*path_to_file;
 	char	   		human_time[16];
 	char			sym_link[PATH_MAX];
 	char			perm[12];
@@ -81,7 +82,7 @@ typedef struct			s_file
 typedef struct			s_lsenv
 {
 	char		*pname;
-	char		*color[13];
+//	char		*color[11];
 	t_lst		*file;
 	t_lst		*dir;
 	t_winsize	winsize;
