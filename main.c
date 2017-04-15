@@ -6,11 +6,13 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 16:54:32 by jye               #+#    #+#             */
-/*   Updated: 2017/04/15 03:15:05 by root             ###   ########.fr       */
+/*   Updated: 2017/04/15 23:25:24 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
+
+void	set_timespec(t_file *file, t_lsenv *ls);
 
 t_cdir	*init_dir__(char *path, t_lsenv *ls)
 {
@@ -26,7 +28,7 @@ t_cdir	*init_dir__(char *path, t_lsenv *ls)
 		free(new_);
 		return (NULL);
 	}
-	if ((new_->cur_path_name = strdup(path)) == NULL)
+	if ((new_->cur_path = strdup(path)) == NULL)
 	{
 		perror(ls->pname);
 		free(new_->cwd);
@@ -55,20 +57,24 @@ char	*cat_path_file(char *cur_dir, char *file)
 	return (path);
 }
 
-t_file	*init_file__(t_cdir *cdir, t_dirent *cfile)
+t_file	*init_file__(t_cdir *cdir, t_dirent *cfile, t_lsenv *ls)
 {
 	t_file	*new_;
 
+	(void)ls;
 	errno = 0;
 	if ((new_ = malloc(sizeof(t_file))) == NULL)
 		return (NULL);
 	memset(new_, 0, sizeof(t_file));
-	if (!(new_->path_file = cat_path_file(cdir->cur_path_name, cfile->d_name)))
+	if (!(new_->path_to_file = cat_path_file(cdir->cur_path ,cfile->d_name)))
 	{
 		free(new_);
 		return (NULL);
 	}
-	new_->file = cfile;
+	if (ls->flag & color)
+		;
+	else
+		new_->name = strdup(cfile->d_name);
 	return (new_);
 }
 
@@ -78,9 +84,9 @@ int		init_fstat__(t_file *file_data)
 
 	if ((fstat_ = malloc(sizeof(t_stat))) == NULL)
 		return (1);
-	if ((lstat(file_data->path_file, fstat_)) == -1)
+	if ((lstat(file_data->path_to_file, fstat_)) == -1)
 		return (1);
-	file_data->file_stat = fstat_;
+	file_data->stat = fstat_;
 	return (0);
 }
 
@@ -109,7 +115,7 @@ void	read_cwd(t_cdir *cdir, t_lsenv *ls)
 		flen = strlen(cfile->d_name);
 		if (cdir->max_len < flen)
 			cdir->max_len = flen;
-		if ((file_data = init_file__(cdir, cfile)) == NULL)
+		if ((file_data = init_file__(cdir, cfile, ls)) == NULL)
 		{
 			perror(ls->pname);
 			free(cfile);
@@ -122,12 +128,38 @@ void	read_cwd(t_cdir *cdir, t_lsenv *ls)
 			free(file_data);
 			continue ;
 		}
+		if (ls->flag & (TIME_FLAG | ell))
+			set_timespec(file_data, ls);
 		append_lst__(cwd_file, file_data);
 		cwd_file = cwd_file->next;
 		nb_file += 1;
 	}
 	cdir->cwd_nb_file = nb_file;
 	pop_lst__(&cdir->cwd_file, NULL);
+}
+
+void	free_file(t_file *file)
+{
+	if (file->path_to_file)
+	{
+		free(file->name);
+		free(file->path_to_file);
+	}
+	free(file->stat);
+	free(file);
+}
+
+void	free_cdir(t_cdir *cdir)
+{
+	t_lst	*to_free;
+	
+	to_free = cdir->cwd_file;
+	while (to_free)
+		pop_lst__(&to_free, &free_file);
+	free(cdir->cur_path);
+	if (cdir->cwd)
+		closedir(cdir->cwd);
+	free(cdir);
 }
 
 void	list_dir_(t_lsenv *ls)
@@ -137,45 +169,47 @@ void	list_dir_(t_lsenv *ls)
 	if ((cdir = init_dir__(ls->dir->data, ls)) == NULL)
 		return ;
 	read_cwd(cdir, ls);
+	if (!cdir->cwd_file)
+	{
+		free_cdir(cdir);
+		return ;
+	}
 	if (ls->flag & no_sort)
 	{
 		print_list(cdir, ls);
 		return ;
 	}
-	/* if (ls->flag & (atim | ctim | mtim)) */
-	/* 	cdir->cwd_file = sort_int(&cdir->cwd_file, cdir->cwd_nb_file) */
-	/* else */
+	if (ls->flag & mtim)
+	{
+		printf("LOL\n");
+		cdir->cwd_file = sort_int(&cdir->cwd_file, cdir->cwd_nb_file);
+	}
+	else
 		cdir->cwd_file = sort_ascii(&cdir->cwd_file, cdir->cwd_nb_file);
 	print_list(cdir, ls);
+	free_cdir(cdir);
 }
 
-void	print_args_(t_cdir *cdir, t_lsenv *ls) // broken
+void	set_timespec(t_file *file, t_lsenv *ls)
 {
-	int		x;
-	int		i;
-	int		o;
-	int		pad;
-	t_lst	*t;
+	t_stat	*fstat;
 
-	x = ls->winsize.ws_col / (cdir->max_len + MIN_WIDTH);
-	o = cdir->cwd_nb_file / x;
-	pad = cdir->max_len + MIN_WIDTH;
-	t = cdir->cwd_file;
-	i = 0;
-	while (t)
+	fstat = file->stat;
+	if (ls->flag & ctim)
 	{
-		t_file *z = (t_file *)t->data;
-		printf("%*s", -pad, z->file_name);
-		++i;
-		t = t->next;
-		if (i == o)
-		{
-			i = 0;
-			printf("\n");
-		}
+		file->time = &fstat->st_ctimespec;
+		printf("ctim\n");
 	}
-	if (i)
-		printf("\n");
+	else if (ls->flag & atim)
+	{
+		file->time = &fstat->st_atimespec;
+		printf("atim\n");
+	}
+	else
+	{
+		file->time = &fstat->st_mtimespec;
+		printf("mtim\n");
+	}
 }
 
 void	list_args(t_lsenv *ls)
@@ -195,19 +229,23 @@ void	list_args(t_lsenv *ls)
 	{
 		file = malloc(sizeof *file);
 		memset(file, 0, sizeof *file);
-		file->file_name = (char *)args->data;
-		slen = strlen(file->file_name);
+		file->name = (char *)args->data;
+		slen = strlen(file->name);
 		if (cdir->max_len < slen)
 			cdir->max_len = slen;
-		file->file_stat = malloc(sizeof(t_stat));
-		lstat(file->path_file, file->file_stat);
+		file->stat = malloc(sizeof(t_stat));
+		lstat(file->name, file->stat);
+		if (ls->flag & (TIME_FLAG | ell))
+			set_timespec(file, ls);
 		pop_lst__(&args, NULL);
 		append_lst__(cp_ar, file);
 		cp_ar = cp_ar->next;
+		cdir->cwd_nb_file += 1;
 	}
 	pop_lst__(&cdir->cwd_file, NULL);
 	ls->file = NULL;
-	print_args_(cdir, ls);
+	print_list(cdir, ls);
+	free_cdir(cdir);
 }
 
 void	list_dir(t_lsenv *ls)
@@ -231,7 +269,6 @@ void	list_dir(t_lsenv *ls)
 
 int		main(int ac, char **av)
 {
-	char	*args;
 	t_lsenv	ls;
 
 	set_ls_args(&ls, ac, av);

@@ -1,18 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sort_ascii.c                                       :+:      :+:    :+:   */
+/*   sort_int.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/04/12 19:22:58 by jye               #+#    #+#             */
-/*   Updated: 2017/04/15 17:51:23 by jye              ###   ########.fr       */
+/*   Created: 2017/04/15 22:46:47 by jye               #+#    #+#             */
+/*   Updated: 2017/04/15 23:08:58 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-t_lst	*merge(t_lst *a, t_lst *b)
+static time_t	sort_time_then_ascii(t_file *a, t_file *b)
+{
+	if (a->time->tv_sec > b->time->tv_sec)
+		return (-1);
+	else if (a->time->tv_sec < b->time->tv_sec)
+		return (1);
+	if (a->time->tv_nsec > b->time->tv_nsec)
+		return (-1);
+	else if (a->time->tv_sec < b->time->tv_sec)
+		return (1);
+	return (strcmp(a->name, b->name));
+}
+
+static t_lst	*merge(t_lst *a, t_lst *b)
 {
 	t_lst	*sort;
 	t_file	*fa;
@@ -22,7 +35,7 @@ t_lst	*merge(t_lst *a, t_lst *b)
 		return (a);
 	fa = (t_file *)a->data;
 	fb = (t_file *)b->data;
-	while (strcmp(fa->name, fb->name) >= 0)
+	while (sort_time_then_ascii(fa, fb) >= 0)
 	{
 		push_lst__(&a, fb);
 		pop_lst__(&b, NULL);
@@ -36,7 +49,7 @@ t_lst	*merge(t_lst *a, t_lst *b)
 	{
 		fa = (t_file *)sort->data;
 		fb = (t_file *)b->data;
-		if (strcmp(fa->name, fb->name) <= 0)
+		if (sort_time_then_ascii(fa, fb) <= 0)
 		{
 			if (sort->next == NULL)
 			{
@@ -54,7 +67,7 @@ t_lst	*merge(t_lst *a, t_lst *b)
 	return (a);
 }
 
-t_lst	*sort_ascii(t_lst **stack, size_t slen)
+t_lst	*sort_int(t_lst **stack, size_t slen)
 {
 	t_lst	*a;
 	t_lst	*b;
@@ -71,7 +84,7 @@ t_lst	*sort_ascii(t_lst **stack, size_t slen)
 		pop_lst__(stack, NULL);
 		return (merge(a, b));
 	}
-	a = sort_ascii(stack, slen % 2  ? (slen / 2) + 1 : slen / 2);
-	b = sort_ascii(stack, slen / 2);
+	a = sort_int(stack, slen % 2  ? (slen / 2) + 1 : slen / 2);
+	b = sort_int(stack, slen / 2);
 	return (merge(a, b));
 }

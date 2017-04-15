@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/03 19:56:36 by jye               #+#    #+#             */
-/*   Updated: 2017/04/13 19:26:04 by root             ###   ########.fr       */
+/*   Updated: 2017/04/15 22:07:10 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ t_lst	*init_lst__(void *data)
 void	push_lst__(t_lst **node, void *data)
 {
 	t_lst	*high_node;
-//	t_lst	*low_node;
 	t_lst	*new_node;
 	t_lst	*cur_node;
 

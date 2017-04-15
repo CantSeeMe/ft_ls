@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 17:04:26 by jye               #+#    #+#             */
-/*   Updated: 2017/04/15 03:15:07 by root             ###   ########.fr       */
+/*   Updated: 2017/04/15 23:23:42 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,11 @@
 # define SIX_MONTH_SEC 15552000
 # define IS_TOO_OLD(timespec) ((timespec) > SIX_MONTH_SEC)
 # define IS_TOO_NEW(timespec) ((timespec) > SIX_MONTH_SEC)
+# define TIME_FLAG (ctim | atim | mtim)
 //# define DEFAULT "\e[0m"
 # define LS_FLAGS "lRratuUGfh1"
 # define CWD "."
-# define MIN_WIDTH 2
+# define MIN_WIDTH 1
 
 typedef struct winsize	t_winsize;
 typedef struct dirent	t_dirent;
@@ -58,7 +59,7 @@ typedef struct			s_cdir
 {
 	DIR			*cwd;
 	t_lst		*cwd_file;
-	char		*cur_path_name;
+	char		*cur_path;
 	size_t		cwd_nb_file;
 	size_t		max_len;
 }						t_cdir;
@@ -69,7 +70,7 @@ typedef struct			s_file
 	t_stat	   		*stat;
 //	char			*group_name; // strdup if NULL show gid
 //	char			*user_name; // strdup, if NULL show uid
-//	struct timespec	time; // which st_*tim to use;
+	struct timespec	*time; // which st_*tim to use;
 	char			*name;
 	char	   		*path_to_file;
 	char	   		human_time[16];
@@ -122,12 +123,8 @@ int						set_flag(int ac, char **av);
 /*
 ** sort int / ascii using merge
 */
-//t_lst					*merge_tfile();
-//t_lst					*merge_rtfile();
-//t_lst					*merge_tfile_time();
-//t_lst					*merge_rtfile_time();
 
-t_lst					*sort_int(t_lst *stack, size_t slen);
+t_lst					*sort_int(t_lst **stack, size_t slen);
 t_lst					*sort_ascii(t_lst **stack, size_t slen);
 
 /*
