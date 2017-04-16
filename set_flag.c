@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/15 22:08:07 by jye               #+#    #+#             */
-/*   Updated: 2017/04/15 22:08:07 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/16 02:37:48 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,11 @@ int			set_flag(int ac, char **av)
 		else if (c == 't')
 			flag |= mtim;
 		else if (c == 'u')
-			flag |= atim;
+			flag = (flag & ctim ? flag ^ ctim : flag) | atim;
 		else if (c == 'U')
-			flag |= ctim;
+			flag = (flag & atim ? flag ^ atim : flag) | ctim;
 		else if (c == 'f')
-			flag |= no_sort;
+			flag = (flag & 0) | (no_sort | show_all);
 		else if (c == 'h')
 			flag |= human_size;
 		else if (c == 'G')
@@ -51,5 +51,7 @@ int			set_flag(int ac, char **av)
 		else
 			usage(av[0]);
 	}
+	if (!isatty(STDOUT_FILENO))
+		flag = (flag & ~(color)) | one;
 	return (flag);
 }

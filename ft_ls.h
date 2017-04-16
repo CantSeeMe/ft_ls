@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 17:04:26 by jye               #+#    #+#             */
-/*   Updated: 2017/04/15 23:23:42 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/16 03:32:45 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,8 +110,22 @@ enum					e_flag
 ** ls
 */
 void					set_ls_args(t_lsenv *ls, int ac, char **av);
-//void					list_dir(t_lsenv *ls);
+void					list_dir(t_lsenv *ls);
 void					list_args(t_lsenv *ls);
+/*
+** additional bullshit because of norm ¯\_(ツ)_/¯
+*/
+void					set_timespec(t_file *file, t_lsenv *ls);
+
+/*
+** init struct
+*/
+t_file					*init_file__(t_cdir *cdir,
+									t_dirent *cfile,
+									t_lsenv *ls);
+t_cdir					*init_dir__(char *path, t_lsenv *ls);
+int						init_fstat__(t_file *file_data);
+
 
 /*
 ** get_ arg / opt
@@ -123,7 +137,6 @@ int						set_flag(int ac, char **av);
 /*
 ** sort int / ascii using merge
 */
-
 t_lst					*sort_int(t_lst **stack, size_t slen);
 t_lst					*sort_ascii(t_lst **stack, size_t slen);
 
@@ -141,6 +154,12 @@ char					*time_format(time_t file_timespec, char *buf);
 ** permission format
 */
 void					perm_format(register mode_t st_mode, register char *restrict perm);
+
+/*
+** free custom struct
+*/
+void					free_file(t_file *file);
+void					free_cdir(t_file *cdir);
 
 /*
 ** lst
