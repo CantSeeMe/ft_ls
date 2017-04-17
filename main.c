@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 16:54:32 by jye               #+#    #+#             */
-/*   Updated: 2017/04/16 03:34:43 by root             ###   ########.fr       */
+/*   Updated: 2017/04/17 03:45:57 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,6 +140,93 @@ void	list_dir(t_lsenv *ls)
 	}
 }
 
+/* -------------------------------------------- */
+/* -------------------------------------------- */
+/* -------------------------------------------- */
+
+t_lst	*get_dir_to_list(t_lsenv *ls)
+{
+	t_cdir	*cdir;
+	t_lst	*args;
+	t_lst	*ldir;
+	t_lst	*ldir_ape;
+
+	args = ls->dir;
+	if ((ldir = init_lst__(NULL)) == NULL)
+	{
+		dprintf(STDERR_FILENO, "%s: line %s: malloc failed\n",
+				ls->pname,
+				__LINE__ - 2);
+		exit(EXIT_FAILURE);
+	}
+	ldir_ape = ldir;
+	ls->dir = NULL;
+	while (args)
+	{
+		if ((cdir = init_dir__(args->data, ls)) == NULL)
+		{
+			dprintf(STDERR_FILENO, "%s: line %s: malloc failed, cannot" \
+					"list directory %s\n",
+					ls->pname,
+					__LINE__ - 2,
+					args->data);
+		}
+		append_lst__(ldir_ape, cdir);
+		ldir_ape = ldir_ape->next;
+		pop_lst__(&args, NULL);
+	}
+	pop_lst__(&ldir, NULL);
+	return (ldir);
+}
+
+t_lst	*read_rcwd(t_cdir *cdir, t_lsenv *ls)
+{
+	DIR			*cwd;
+	t_lst		*cwd_file;
+	t_lst		*new_entry;
+	t_stat		*fstat;
+	t_dirent	*cfile;
+	t_file		*file;
+	size_t		nb_file;
+	size_t		slen;
+
+	cwd = cdir->cwd;
+	new_entry = NULL;
+	nb_file = 0;
+	while ((cfile = readdir(cwd)) != NULL)
+	{
+		if ((file = init_file__(cdir, cfile, ls)) == NULL)
+			
+	}
+	return (new_entry);
+}
+
+void	list_rdir(t_lsenv *ls)
+{
+	t_lst	*cur_dir_to_list;
+	t_lst	*new_entry;
+	t_cdir	*cdir;
+
+	if (ls->file)
+	{
+		list_args(ls);
+		if (ls->dir)
+			printf("\n");
+	}
+	cur_dir_to_list = get_dir_to_list(ls);
+	while (cur_dir_to_list)
+	{
+		cdir = (t_cdir *)cur_dir_to_list->data;
+		if (ls->flag & show_folder)
+			printf("%s:\n", cdir->cur_path);
+		new_entry = read_rcwd();
+		append_entry(cur_dir_to_list, new_entry);
+		pop_lst__(&cur_dir_to_list, &free_cdir);
+		if (cdir_to_list)
+			printf("\n");
+	}
+}
+
 int		main(int ac, char **av)
 {
 	t_lsenv	ls;
@@ -149,7 +236,7 @@ int		main(int ac, char **av)
 /* 	if (ls.flag & color) */
 /* 		set_color(&ls); */
 /* #endif */
-	if (ls->flag & recursive)
+	if (ls.flag & recursive)
 		list_rdir(&ls);
 	else
 		list_dir(&ls);

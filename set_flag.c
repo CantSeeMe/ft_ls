@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/15 22:08:07 by jye               #+#    #+#             */
-/*   Updated: 2017/04/16 02:37:48 by root             ###   ########.fr       */
+/*   Updated: 2017/04/16 13:57:33 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,9 @@ int			set_flag(int ac, char **av)
 		else if (c == 't')
 			flag |= mtim;
 		else if (c == 'u')
-			flag = (flag & ctim ? flag ^ ctim : flag) | atim;
+			flag = (flag & ~ctim) | atim;
 		else if (c == 'U')
-			flag = (flag & atim ? flag ^ atim : flag) | ctim;
+			flag = (flag & ~atim) | ctim;
 		else if (c == 'f')
 			flag = (flag & 0) | (no_sort | show_all);
 		else if (c == 'h')

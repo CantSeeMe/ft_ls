@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/15 22:46:47 by jye               #+#    #+#             */
-/*   Updated: 2017/04/16 00:46:17 by root             ###   ########.fr       */
+/*   Updated: 2017/04/16 14:30:48 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static time_t	sort_time_then_ascii(t_file *a, t_file *b)
 #ifdef __linux__
 	if (a->time->tv_nsec > b->time->tv_nsec)
 		return (-1);
-	else if (a->time->tv_sec < b->time->tv_sec)
+	else if (a->time->tv_nsec < b->time->tv_nsec)
 		return (1);
 #endif
 	return (strcmp(a->name, b->name));
@@ -37,14 +37,10 @@ static t_lst	*merge(t_lst *a, t_lst *b)
 		return (a);
 	fa = (t_file *)a->data;
 	fb = (t_file *)b->data;
-	while (sort_time_then_ascii(fa, fb) >= 0)
+	if (sort_time_then_ascii(fa, fb) >= 0)
 	{
 		push_lst__(&a, fb);
 		pop_lst__(&b, NULL);
-		if (!b)
-			break ;
-		fa = (t_file *)a->data;
-		fb = (t_file *)b->data;
 	}
 	sort = a;
 	while (b)
@@ -64,6 +60,7 @@ static t_lst	*merge(t_lst *a, t_lst *b)
 		{
 			push_lst__(&sort, fb);
 			pop_lst__(&b, NULL);
+			sort = sort->next;
 		}
 	}
 	return (a);

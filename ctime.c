@@ -6,13 +6,13 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 21:34:02 by jye               #+#    #+#             */
-/*   Updated: 2017/04/09 21:34:13 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/16 14:13:11 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-char	*time_format(time_t file_timespec, char *buf)
+char	*time_format(time_t file_timespec)
 {
 	static time_t	cur_timespec = 0;
 	char			*human_time;
@@ -36,5 +36,5 @@ char	*time_format(time_t file_timespec, char *buf)
 	}
 	else
 		12[human_time] = 0;
-	return (strcpy(buf, human_time));
+	return (human_time);
 }

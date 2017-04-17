@@ -6,13 +6,13 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/12 19:22:58 by jye               #+#    #+#             */
-/*   Updated: 2017/04/15 17:51:23 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/16 14:10:07 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-t_lst	*merge(t_lst *a, t_lst *b)
+static t_lst	*merge(t_lst *a, t_lst *b)
 {
 	t_lst	*sort;
 	t_file	*fa;
@@ -22,14 +22,10 @@ t_lst	*merge(t_lst *a, t_lst *b)
 		return (a);
 	fa = (t_file *)a->data;
 	fb = (t_file *)b->data;
-	while (strcmp(fa->name, fb->name) >= 0)
+	if (strcmp(fa->name, fb->name) >= 0)
 	{
 		push_lst__(&a, fb);
 		pop_lst__(&b, NULL);
-		if (!b)
-			break ;
-		fa = (t_file *)a->data;
-		fb = (t_file *)b->data;
 	}
 	sort = a;
 	while (b)
@@ -49,6 +45,7 @@ t_lst	*merge(t_lst *a, t_lst *b)
 		{
 			push_lst__(&sort, fb);
 			pop_lst__(&b, NULL);
+			sort = sort->next;
 		}
 	}
 	return (a);

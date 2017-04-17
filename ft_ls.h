@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 17:04:26 by jye               #+#    #+#             */
-/*   Updated: 2017/04/16 03:32:45 by root             ###   ########.fr       */
+/*   Updated: 2017/04/16 14:13:54 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,7 +148,7 @@ void					print_list(t_cdir *cdir, t_lsenv *ls);
 /*
 ** ripoff from ctime just for ls
 */
-char					*time_format(time_t file_timespec, char *buf);
+char					*time_format(time_t file_timespec);
 
 /*
 ** permission format
@@ -159,7 +159,7 @@ void					perm_format(register mode_t st_mode, register char *restrict perm);
 ** free custom struct
 */
 void					free_file(t_file *file);
-void					free_cdir(t_file *cdir);
+void					free_cdir(t_cdir *cdir);
 
 /*
 ** lst
