@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 18:58:37 by jye               #+#    #+#             */
-/*   Updated: 2017/04/15 23:08:16 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/17 20:36:11 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ static int		set_ls_args_(t_lsenv *ls, t_lst *args)
 		return (1);
 	while (args)
 	{
-		if ((lstat(args->data, &fstat)) == -1)
+		if ((stat(args->data, &fstat)) == -1)
 			push_lst__(&error, args->data);
 		else if (S_ISDIR(fstat.st_mode))
 			push_lst__(&ls->dir, args->data);
@@ -102,7 +102,9 @@ static int		set_ls_args_(t_lsenv *ls, t_lst *args)
 	}
 	while (error)
 	{
-		dprintf(2, "%s: %s: %s\n", ls->pname, error->data, strerror(ENOENT));
+		errno = 0;
+		lstat(error->data, &fstat);
+		dprintf(2, "%s: %s: %s\n", ls->pname, error->data, strerror(errno));
 		pop_lst__(&error, NULL);
 	}
 	return (0);

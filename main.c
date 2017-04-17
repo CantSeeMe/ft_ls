@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 16:54:32 by jye               #+#    #+#             */
-/*   Updated: 2017/04/17 03:45:57 by root             ###   ########.fr       */
+/*   Updated: 2017/04/17 20:27:45 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,18 @@ void	read_cwd(t_cdir *cdir, t_lsenv *ls)
 {
 	DIR			*cwd;
 	t_lst		*cwd_file;
-	t_file		*file_data;
+	t_file		*file;
 	t_dirent	*cfile;
 	size_t		flen;
 	size_t		nb_file;
 
-	cwd = cdir->cwd;
+	if ((cwd = cdir->cwd) == NULL)
+	{
+		dprintf(2, "%s: %s: %s\n", ls->pname,
+									cdir->cur_path,
+									strerror(cdir->errno_));
+		return ;
+	}
 	if ((cdir->cwd_file = init_lst__(NULL)) == NULL)
 	{
 		dprintf(2, "%s: line %d:  malloc failed", ls->pname, __LINE__ - 2);
@@ -37,22 +43,20 @@ void	read_cwd(t_cdir *cdir, t_lsenv *ls)
 		flen = strlen(cfile->d_name);
 		if (cdir->max_len < flen)
 			cdir->max_len = flen;
-		if ((file_data = init_file__(cdir, cfile, ls)) == NULL)
+		if ((file = init_file__(cdir, cfile, ls)) == NULL)
 		{
 			perror(ls->pname);
-			free(cfile);
 			continue ;
 		}
-		if ((init_fstat__(file_data)) == 1)
+		if ((init_fstat__(file)) == 1)
 		{
 			perror(ls->pname);
-			free(cfile);
-			free(file_data);
+			free(file);
 			continue ;
 		}
 		if (ls->flag & (TIME_FLAG | ell))
-			set_timespec(file_data, ls);
-		append_lst__(cwd_file, file_data);
+			set_timespec(file, ls);
+		append_lst__(cwd_file, file);
 		cwd_file = cwd_file->next;
 		nb_file += 1;
 	}
@@ -79,7 +83,7 @@ void	list_dir_(t_lsenv *ls)
 	}
 	if (ls->flag & mtim)
 		cdir->cwd_file = sort_int(&cdir->cwd_file, cdir->cwd_nb_file);
-	else
+	else if (!(ls->flag & no_sort))
 		cdir->cwd_file = sort_ascii(&cdir->cwd_file, cdir->cwd_nb_file);
 	print_list(cdir, ls);
 	free_cdir(cdir);
@@ -154,7 +158,7 @@ t_lst	*get_dir_to_list(t_lsenv *ls)
 	args = ls->dir;
 	if ((ldir = init_lst__(NULL)) == NULL)
 	{
-		dprintf(STDERR_FILENO, "%s: line %s: malloc failed\n",
+		dprintf(STDERR_FILENO, "%s: line %d: malloc failed\n",
 				ls->pname,
 				__LINE__ - 2);
 		exit(EXIT_FAILURE);
@@ -165,11 +169,12 @@ t_lst	*get_dir_to_list(t_lsenv *ls)
 	{
 		if ((cdir = init_dir__(args->data, ls)) == NULL)
 		{
-			dprintf(STDERR_FILENO, "%s: line %s: malloc failed, cannot" \
-					"list directory %s\n",
+			dprintf(STDERR_FILENO, "%s: line %d: malloc failed, cannot" \
+					" list directory %s\n",
 					ls->pname,
 					__LINE__ - 2,
 					args->data);
+			exit(EXIT_FAILURE);
 		}
 		append_lst__(ldir_ape, cdir);
 		ldir_ape = ldir_ape->next;
@@ -179,26 +184,40 @@ t_lst	*get_dir_to_list(t_lsenv *ls)
 	return (ldir);
 }
 
-t_lst	*read_rcwd(t_cdir *cdir, t_lsenv *ls)
+void	go_git_gud(t_cdir *cdir, t_lst **cur_dir_to_list, t_lsenv *ls)
 {
-	DIR			*cwd;
-	t_lst		*cwd_file;
-	t_lst		*new_entry;
-	t_stat		*fstat;
-	t_dirent	*cfile;
-	t_file		*file;
-	size_t		nb_file;
-	size_t		slen;
+	t_lst	*a;
+	t_lst	*cwd_file;
+	t_file	*file;
+	t_cdir	*new_;
 
-	cwd = cdir->cwd;
-	new_entry = NULL;
-	nb_file = 0;
-	while ((cfile = readdir(cwd)) != NULL)
+	if (cdir->cwd_nb_file == 0)
+		return ;
+	if (ls->flag & mtim)
+		cdir->cwd_file = sort_int(&cdir->cwd_file, cdir->cwd_nb_file);
+	else if (!(ls->flag & no_sort))
+		cdir->cwd_file = sort_ascii(&cdir->cwd_file, cdir->cwd_nb_file);
+	cwd_file = cdir->cwd_file;
+	a = NULL;
+	while (cwd_file)
 	{
-		if ((file = init_file__(cdir, cfile, ls)) == NULL)
-			
+		file = (t_file *)cwd_file->data;
+		if (S_ISDIR(file->stat->st_mode) && strcmp(file->name, CWD) && strcmp(file->name, ".."))
+		{
+			if ((new_ = init_dir__(file->path_to_file, ls)) == NULL)
+			{
+				cwd_file = cwd_file->next;
+				continue ;
+			}
+			push_lst__(&a, new_);
+		}
+		cwd_file = cwd_file->next;
 	}
-	return (new_entry);
+	while (a)
+	{
+		push_lst__(cur_dir_to_list, a->data);
+		pop_lst__(&a, NULL);
+	}
 }
 
 void	list_rdir(t_lsenv *ls)
@@ -219,10 +238,12 @@ void	list_rdir(t_lsenv *ls)
 		cdir = (t_cdir *)cur_dir_to_list->data;
 		if (ls->flag & show_folder)
 			printf("%s:\n", cdir->cur_path);
-		new_entry = read_rcwd();
-		append_entry(cur_dir_to_list, new_entry);
-		pop_lst__(&cur_dir_to_list, &free_cdir);
-		if (cdir_to_list)
+		read_cwd(cdir, ls);
+		pop_lst__(&cur_dir_to_list, NULL);
+		go_git_gud(cdir, &cur_dir_to_list, ls);
+		print_list(cdir, ls);
+		free_cdir(cdir);
+		if (cur_dir_to_list)
 			printf("\n");
 	}
 }

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init_file__.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/04/17 20:14:05 by jye               #+#    #+#             */
+/*   Updated: 2017/04/17 22:21:22 by jye              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ft_ls.h"
 
 static char	*cat_path_file(char *cur_dir, char *file)
@@ -8,13 +20,23 @@ static char	*cat_path_file(char *cur_dir, char *file)
 
 	cd_len = strlen(cur_dir);
 	f_len = strlen(file);
-	if ((path = malloc(cd_len + f_len + 2)) == NULL)
-		return (NULL);
-	memset(path, 'c', cd_len + f_len + 2);
-	memcpy(path, cur_dir, cd_len);
-	cd_len[path] = '/';
-	memcpy(path + cd_len + 1, file, f_len);
-	(cd_len + f_len + 1)[path] = 0;
+	if (cd_len == 1 && *cur_dir == '/')
+	{
+		if ((path = malloc(cd_len + f_len + 1)) == NULL)
+			return (NULL);
+		memcpy(path, cur_dir, cd_len);
+		memcpy(path + cd_len, file, f_len);
+		(cd_len + f_len)[path] = 0;
+	}
+	else
+	{
+		if ((path = malloc(cd_len + f_len + 2)) == NULL)
+			return (NULL);
+		memcpy(path, cur_dir, cd_len);
+		cd_len[path] = '/';
+		memcpy(path + cd_len + 1, file, f_len);
+		(cd_len + f_len + 1)[path] = 0;
+	}
 	return (path);
 }
 
@@ -33,7 +55,7 @@ t_file		*init_file__(t_cdir *cdir, t_dirent *cfile, t_lsenv *ls)
 		return (NULL);
 	}
 	if (ls->flag & color)
-		;
+		/* set_color(new_) */;
 	else
 		new_->name = strdup(cfile->d_name);
 	return (new_);

@@ -6,7 +6,7 @@
 /*   By: root <jye@student.42.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/13 20:03:32 by root              #+#    #+#             */
-/*   Updated: 2017/04/16 14:31:05 by root             ###   ########.fr       */
+/*   Updated: 2017/04/17 23:04:26 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,12 +37,19 @@ static void	print_many_per_line(t_cdir *cdir, t_lsenv *ls)
 	size_t	it[2];
 	int		skip_;
 	size_t	i = 0;
+	size_t	z;
 	int		pad;
 
 	a = format(cdir);
 	pad = cdir->max_len + MIN_WIDTH;
 	it[1] = cdir->cwd_nb_file;
-	skip_ = it[1] / (ls->winsize.ws_col / pad) + 1;
+	if ((z = (ls->winsize.ws_col / pad)) != 0)
+		skip_ = it[1] / z + 1;
+	else
+	{
+		skip_ = 1;
+		pad = 0;
+	}
 	0[it] = 0;
 	while (it[0] < it[1])
 	{

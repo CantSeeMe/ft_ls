@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 17:04:26 by jye               #+#    #+#             */
-/*   Updated: 2017/04/16 14:13:54 by root             ###   ########.fr       */
+/*   Updated: 2017/04/17 20:10:58 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ typedef struct			s_cdir
 	char		*cur_path;
 	size_t		cwd_nb_file;
 	size_t		max_len;
+	int			errno_;
 }						t_cdir;
 
 typedef struct			s_file

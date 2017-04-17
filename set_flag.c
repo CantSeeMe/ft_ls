@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/15 22:08:07 by jye               #+#    #+#             */
-/*   Updated: 2017/04/16 13:57:33 by root             ###   ########.fr       */
+/*   Updated: 2017/04/17 18:55:54 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int			set_flag(int ac, char **av)
 		else if (c == '1')
 			flag |= one;
 		else if (c == 'R')
-			flag |= recursive;
+			flag |= recursive | show_folder;
 		else if (c == 'r')
 			flag |= rever_sort;
 		else if (c == 'a')
