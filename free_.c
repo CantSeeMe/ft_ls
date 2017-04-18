@@ -7,7 +7,6 @@ void	free_file(t_file *file)
 		free(file->name);
 		free(file->path_to_file);
 	}
-	free(file->stat);
 	free(file);
 }
 

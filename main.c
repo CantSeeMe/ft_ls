@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 16:54:32 by jye               #+#    #+#             */
-/*   Updated: 2017/04/17 20:27:45 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/18 01:59:28 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,10 +48,10 @@ void	read_cwd(t_cdir *cdir, t_lsenv *ls)
 			perror(ls->pname);
 			continue ;
 		}
-		if ((init_fstat__(file)) == 1)
+		if (lstat(file->path_to_file, &file->stat) == -1)
 		{
 			perror(ls->pname);
-			free(file);
+			free_file(file);
 			continue ;
 		}
 		if (ls->flag & (TIME_FLAG | ell))
@@ -110,8 +110,7 @@ void	list_args(t_lsenv *ls)
 		slen = strlen(file->name);
 		if (cdir->max_len < slen)
 			cdir->max_len = slen;
-		file->stat = malloc(sizeof(t_stat));
-		lstat(file->name, file->stat);
+		lstat(file->name, &file->stat);
 		if (ls->flag & (TIME_FLAG | ell))
 			set_timespec(file, ls);
 		pop_lst__(&args, NULL);
@@ -184,7 +183,7 @@ t_lst	*get_dir_to_list(t_lsenv *ls)
 	return (ldir);
 }
 
-void	go_git_gud(t_cdir *cdir, t_lst **cur_dir_to_list, t_lsenv *ls)
+void	go_git_gud(t_cdir *cdir, t_lst *cur_dir_to_list, t_lsenv *ls)
 {
 	t_lst	*a;
 	t_lst	*cwd_file;
@@ -198,25 +197,21 @@ void	go_git_gud(t_cdir *cdir, t_lst **cur_dir_to_list, t_lsenv *ls)
 	else if (!(ls->flag & no_sort))
 		cdir->cwd_file = sort_ascii(&cdir->cwd_file, cdir->cwd_nb_file);
 	cwd_file = cdir->cwd_file;
-	a = NULL;
+	a = cur_dir_to_list;
 	while (cwd_file)
 	{
 		file = (t_file *)cwd_file->data;
-		if (S_ISDIR(file->stat->st_mode) && strcmp(file->name, CWD) && strcmp(file->name, ".."))
+		if (S_ISDIR(file->stat.st_mode) && strcmp(file->name, CWD) && strcmp(file->name, ".."))
 		{
 			if ((new_ = init_dir__(file->path_to_file, ls)) == NULL)
 			{
 				cwd_file = cwd_file->next;
 				continue ;
 			}
-			push_lst__(&a, new_);
+			append_lst__(a, new_);
+			a = a->next;
 		}
 		cwd_file = cwd_file->next;
-	}
-	while (a)
-	{
-		push_lst__(cur_dir_to_list, a->data);
-		pop_lst__(&a, NULL);
 	}
 }
 
@@ -239,10 +234,9 @@ void	list_rdir(t_lsenv *ls)
 		if (ls->flag & show_folder)
 			printf("%s:\n", cdir->cur_path);
 		read_cwd(cdir, ls);
-		pop_lst__(&cur_dir_to_list, NULL);
-		go_git_gud(cdir, &cur_dir_to_list, ls);
+		go_git_gud(cdir, cur_dir_to_list, ls);
 		print_list(cdir, ls);
-		free_cdir(cdir);
+		pop_lst__(&cur_dir_to_list, &free_cdir);
 		if (cur_dir_to_list)
 			printf("\n");
 	}

@@ -4,7 +4,7 @@ void	set_timespec(t_file *file, t_lsenv *ls)
 {
 	t_stat	*fstat;
 
-	fstat = file->stat;
+	fstat = &file->stat;
 #ifdef __APPLE__
 	if (ls->flag & ctim)
 		file->time = &fstat->st_ctimespec;

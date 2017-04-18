@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 17:04:26 by jye               #+#    #+#             */
-/*   Updated: 2017/04/17 20:10:58 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/18 02:21:31 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ typedef struct			s_cdir
 typedef struct			s_file
 {
 //	t_dirent   		*file;
-	t_stat	   		*stat;
+	t_stat	   		stat;
 //	char			*group_name; // strdup if NULL show gid
 //	char			*user_name; // strdup, if NULL show uid
 	struct timespec	*time; // which st_*tim to use;
@@ -113,6 +113,7 @@ enum					e_flag
 void					set_ls_args(t_lsenv *ls, int ac, char **av);
 void					list_dir(t_lsenv *ls);
 void					list_args(t_lsenv *ls);
+
 /*
 ** additional bullshit because of norm ¯\_(ツ)_/¯
 */
