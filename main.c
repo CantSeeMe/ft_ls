@@ -6,11 +6,59 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 16:54:32 by jye               #+#    #+#             */
-/*   Updated: 2017/04/18 02:56:51 by root             ###   ########.fr       */
+/*   Updated: 2017/04/18 22:36:47 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
+
+size_t	intlen(long integer)
+{
+	size_t	z;
+
+	z = 1;
+	while (integer > 9)
+	{
+		integer /= 10;
+		++z;
+	}
+	return z;
+}
+
+void	set_var(t_cdir *cdir, t_file *file, t_lsenv *ls)
+{
+	t_group		*group;
+	t_passwd	*user;
+	t_stat		*fstat;
+	size_t		len;
+
+	if (ls->flag & ell)
+	{
+		fstat = &file->stat;
+		group = getgrgid(fstat->st_gid);
+		user = getpwuid(fstat->st_uid);
+		len = strlen(group->gr_name);
+		if (len > cdir->gr_len)
+			cdir->gr_len = len;
+		len = strlen(user->pw_name);
+		if (len > cdir->pw_len)
+			cdir->pw_len = len;
+		len = intlen(fstat->st_size);
+		if (len > cdir->size_len)
+			cdir->size_len = len;
+		len = intlen(fstat->st_nlink);
+		if (len > cdir->nlink_len)
+			cdir->nlink_len = len;
+		cdir->block += fstat->st_blocks;
+		if (S_ISLNK(fstat->st_mode))
+			readlink(file->path_to_file, file->sym_link, PATH_MAX);
+		if (ls->flag & human_size)
+		{}
+		set_timespec(file, ls);
+	}
+	else
+		set_timespec(file, ls);
+}
 
 void	read_cwd(t_cdir *cdir, t_lsenv *ls)
 {
@@ -55,7 +103,7 @@ void	read_cwd(t_cdir *cdir, t_lsenv *ls)
 			continue ;
 		}
 		if (ls->flag & (TIME_FLAG | ell))
-			set_timespec(file, ls);
+			set_var(cdir, file, ls);
 		append_lst__(cwd_file, file);
 		cwd_file = cwd_file->next;
 		nb_file += 1;
@@ -218,7 +266,6 @@ void	go_git_gud(t_cdir *cdir, t_lst *cur_dir_to_list, t_lsenv *ls)
 void	list_rdir(t_lsenv *ls)
 {
 	t_lst	*cur_dir_to_list;
-	t_lst	*new_entry;
 	t_cdir	*cdir;
 
 	if (ls->file)

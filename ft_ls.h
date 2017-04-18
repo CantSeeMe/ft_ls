@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 17:04:26 by jye               #+#    #+#             */
-/*   Updated: 2017/04/18 02:24:57 by root             ###   ########.fr       */
+/*   Updated: 2017/04/18 22:32:37 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,23 +62,23 @@ typedef struct			s_cdir
 	char		*cur_path;
 	size_t		cwd_nb_file;
 	size_t		max_len;
+	size_t		pw_len;
+	size_t		gr_len;
+	size_t		size_len;
+	size_t		nlink_len;
+	quad_t		block;
 	int			errno_;
 }						t_cdir;
 
 typedef struct			s_file
 {
-//	t_dirent   		*file;
 	t_stat	   		stat;
-//	char			*group_name; // strdup if NULL show gid
-//	char			*user_name; // strdup, if NULL show uid
+//	char			*gr_name; // strdup if NULL show gid
+//	char			*pw_name; // strdup, if NULL show uid
 	struct timespec	*time; // which st_*tim to use;
 	char			*name;
 	char	   		*path_to_file;
-//	char	   		human_time[16];
 	char			sym_link[PATH_MAX];
-//	char			perm[12];
-	int				acl;
-	int				xattr;
 }						t_file;
 
 typedef struct			s_lsenv
@@ -145,6 +145,7 @@ t_lst					*sort_ascii(t_lst **stack, size_t slen);
 /*
 ** print_list / ell / one
 */
+void					print_ell(t_cdir *cdir, t_lsenv *ls);
 void					print_list(t_cdir *cdir, t_lsenv *ls);
 
 /*
@@ -155,7 +156,7 @@ char					*time_format(time_t file_timespec);
 /*
 ** permission format
 */
-void					perm_format(register mode_t st_mode, register char *restrict perm);
+char					*perm_format(register mode_t st_mode, const char *path);
 
 /*
 ** free custom struct

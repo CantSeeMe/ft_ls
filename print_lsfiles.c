@@ -6,7 +6,7 @@
 /*   By: root <jye@student.42.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/13 20:03:32 by root              #+#    #+#             */
-/*   Updated: 2017/04/17 23:04:26 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/18 20:43:12 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,8 +83,8 @@ void	print_list(t_cdir *cdir, t_lsenv *ls)
 {
 	if (ls->flag & one)
 		print_one_per_line(cdir);
-	/* else if (ls->flag & ell) */
-	/* 	print_ell(cdir, ls); */
+	else if (ls->flag & ell)
+		print_ell(cdir, ls);
 	else
 		print_many_per_line(cdir, ls);
 }

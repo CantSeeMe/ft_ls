@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/15 22:46:47 by jye               #+#    #+#             */
-/*   Updated: 2017/04/16 14:30:48 by root             ###   ########.fr       */
+/*   Updated: 2017/04/18 18:20:33 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,6 @@ static time_t	sort_time_then_ascii(t_file *a, t_file *b)
 		return (-1);
 	else if (a->time->tv_sec < b->time->tv_sec)
 		return (1);
-#ifdef __linux__
-	if (a->time->tv_nsec > b->time->tv_nsec)
-		return (-1);
-	else if (a->time->tv_nsec < b->time->tv_nsec)
-		return (1);
-#endif
 	return (strcmp(a->name, b->name));
 }
 
