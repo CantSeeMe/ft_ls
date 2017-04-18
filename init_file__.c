@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/17 20:14:05 by jye               #+#    #+#             */
-/*   Updated: 2017/04/17 22:21:22 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/18 02:25:10 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ t_file		*init_file__(t_cdir *cdir, t_dirent *cfile, t_lsenv *ls)
 	errno = 0;
 	if ((new_ = malloc(sizeof(t_file))) == NULL)
 		return (NULL);
-	memset(new_, 0, sizeof(t_file));
+//	memset(new_, 0, sizeof(t_file));
 	if (!(new_->path_to_file = cat_path_file(cdir->cur_path ,cfile->d_name)))
 	{
 		free(new_);

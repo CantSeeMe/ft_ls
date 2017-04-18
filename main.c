@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 16:54:32 by jye               #+#    #+#             */
-/*   Updated: 2017/04/18 01:59:28 by root             ###   ########.fr       */
+/*   Updated: 2017/04/18 02:56:51 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ void	list_args(t_lsenv *ls)
 	while (args)
 	{
 		file = malloc(sizeof *file);
-		memset(file, 0, sizeof *file);
+		file->path_to_file = NULL;
 		file->name = (char *)args->data;
 		slen = strlen(file->name);
 		if (cdir->max_len < slen)

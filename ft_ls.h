@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 17:04:26 by jye               #+#    #+#             */
-/*   Updated: 2017/04/18 02:21:31 by root             ###   ########.fr       */
+/*   Updated: 2017/04/18 02:24:57 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,9 +74,9 @@ typedef struct			s_file
 	struct timespec	*time; // which st_*tim to use;
 	char			*name;
 	char	   		*path_to_file;
-	char	   		human_time[16];
+//	char	   		human_time[16];
 	char			sym_link[PATH_MAX];
-	char			perm[12];
+//	char			perm[12];
 	int				acl;
 	int				xattr;
 }						t_file;
