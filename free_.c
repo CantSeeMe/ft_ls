@@ -7,6 +7,8 @@ void	free_file(t_file *file)
 		free(file->name);
 		free(file->path_to_file);
 	}
+	free(file->gr_name);
+	free(file->pw_name);
 	free(file);
 }
 

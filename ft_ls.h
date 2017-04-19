@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 17:04:26 by jye               #+#    #+#             */
-/*   Updated: 2017/04/18 22:32:37 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/19 03:32:56 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@
 # define IS_TOO_NEW(timespec) ((timespec) > SIX_MONTH_SEC)
 # define TIME_FLAG (ctim | atim | mtim)
 //# define DEFAULT "\e[0m"
-# define LS_FLAGS "lRratuUGfh1"
+# define LS_FLAGS "lRratuUGf1"
 # define CWD "."
 # define MIN_WIDTH 1
 
@@ -73,12 +73,13 @@ typedef struct			s_cdir
 typedef struct			s_file
 {
 	t_stat	   		stat;
-//	char			*gr_name; // strdup if NULL show gid
-//	char			*pw_name; // strdup, if NULL show uid
+	char			*gr_name; // strdup if NULL show gid
+	char			*pw_name; // strdup, if NULL show uid
 	struct timespec	*time; // which st_*tim to use;
 	char			*name;
 	char	   		*path_to_file;
 	char			sym_link[PATH_MAX];
+	ssize_t			sym;
 }						t_file;
 
 typedef struct			s_lsenv
@@ -100,11 +101,10 @@ enum					e_flag
 	mtim = 16,
 	atim = 32,
 	ctim = 64,
-	human_size = 128,
-	no_sort = 256,
-	one = 512,
-	color = 1024,
-	show_folder = 2048
+	no_sort = 128,
+	one = 256,
+	color = 512,
+	show_folder = 1024
 };
 
 /*
@@ -151,12 +151,12 @@ void					print_list(t_cdir *cdir, t_lsenv *ls);
 /*
 ** ripoff from ctime just for ls
 */
-char					*time_format(time_t file_timespec);
+char					*time_format(const time_t file_timespec);
 
 /*
 ** permission format
 */
-char					*perm_format(register mode_t st_mode, const char *path);
+char					*perm_format(register const mode_t st_mode, const char *path);
 
 /*
 ** free custom struct

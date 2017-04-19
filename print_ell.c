@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/18 17:44:24 by jye               #+#    #+#             */
-/*   Updated: 2017/04/18 22:52:38 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/19 03:08:08 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,6 @@
 void	print_ell(t_cdir *cdir, t_lsenv *ls)
 {
 	t_lst	*cwd_file;
-	t_group	*gr;
-	t_passwd *uid;
 	int		pw_pad;
 	int		gr_pad;
 	int		size_pad;
@@ -33,18 +31,30 @@ void	print_ell(t_cdir *cdir, t_lsenv *ls)
 	while (cwd_file)
 	{
 		t_file	*file = cwd_file->data;
-		uid = getpwuid(file->stat.st_uid);
-		gr = getgrgid(file->stat.st_gid);
-		printf("%s %*d %*s %*s %*lld %s %s %s %s\n",
+		if (S_ISCHR(file->stat.st_mode) ||
+			S_ISBLK(file->stat.st_mode))
+			printf("%s %*d %*s %*s %*ld,%5ld %s %s %s %s\n",
+				   perm_format(file->stat.st_mode, file->path_to_file),
+				   nlink_pad, file->stat.st_nlink,
+				   -pw_pad, file->pw_name,
+				   -gr_pad, file->gr_name,
+				   size_pad - 6, file->stat.st_rdev >> 8,
+				   file->stat.st_rdev & 0377,
+				   time_format(file->time->tv_sec),
+				   file->name,
+				   file->sym > 0 ? "->" : "",
+				   file->sym > 0 ? file->sym_link : "");
+		else
+		printf("%s %*d %*s %*s %*ld %s %s %s %s\n",
 			   perm_format(file->stat.st_mode, file->path_to_file),
 			   nlink_pad, file->stat.st_nlink,
-			   -pw_pad, uid->pw_name,
-			   -gr_pad, gr->gr_name,
+			   -pw_pad, file->pw_name,
+			   -gr_pad, file->gr_name,
 			   size_pad, file->stat.st_size,
 			   time_format(file->time->tv_sec),
 			   file->name,
-			   S_ISLNK(file->stat.st_mode) ? "->" : "",
-			   S_ISLNK(file->stat.st_mode) ? file->sym_link : "");
+			   file->sym > 0 ? "->" : "",
+			   file->sym > 0 ? file->sym_link : "");
 		cwd_file = cwd_file->next;
 	}
 }

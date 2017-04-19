@@ -6,13 +6,13 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/10 18:22:04 by jye               #+#    #+#             */
-/*   Updated: 2017/04/18 18:18:00 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/19 03:29:30 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-static int	get_file_type(register mode_t st_mode)
+static int	get_file_type(register const mode_t st_mode)
 {
 	if (S_ISBLK(st_mode))
 		return ('b');
@@ -47,18 +47,11 @@ static int	get_xattr(const char *path)
 		return (' ');
 }
 
-#else
-
-static int	get_xattr(const char *path)
-{
-	return (' ');
-}
-
 #endif
 
-char		*perm_format(register mode_t st_mode, const char *path)
+char		*perm_format(register const mode_t st_mode, const char *path)
 {
-	static char	perm[12];
+	static char	perm[12] = {0};
 
 	0[perm] = get_file_type(st_mode);
 	1[perm] = st_mode & S_IRUSR ? 'r' : '-';
@@ -79,6 +72,6 @@ char		*perm_format(register mode_t st_mode, const char *path)
 		9[perm] = (st_mode & (S_IXOTH)) ? 't' : 'T';
 	else
 		9[perm] = st_mode & S_IXOTH ? 'x' : '-';
-	10[perm] = get_xattr(path);
+//	10[perm] = get_xattr(path);
 	return (perm);
 }

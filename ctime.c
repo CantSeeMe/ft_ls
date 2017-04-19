@@ -6,13 +6,13 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 21:34:02 by jye               #+#    #+#             */
-/*   Updated: 2017/04/16 14:13:11 by root             ###   ########.fr       */
+/*   Updated: 2017/04/19 03:32:58 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-char	*time_format(time_t file_timespec)
+char	*time_format(const time_t file_timespec)
 {
 	static time_t	cur_timespec = 0;
 	char			*human_time;

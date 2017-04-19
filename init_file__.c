@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/17 20:14:05 by jye               #+#    #+#             */
-/*   Updated: 2017/04/18 02:25:10 by root             ###   ########.fr       */
+/*   Updated: 2017/04/19 01:45:34 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ t_file		*init_file__(t_cdir *cdir, t_dirent *cfile, t_lsenv *ls)
 {
 	t_file	*new_;
 
-	(void)ls;
 	errno = 0;
 	if ((new_ = malloc(sizeof(t_file))) == NULL)
 		return (NULL);
@@ -53,6 +52,11 @@ t_file		*init_file__(t_cdir *cdir, t_dirent *cfile, t_lsenv *ls)
 	{
 		free(new_);
 		return (NULL);
+	}
+	if (!(ls->flag & ell))
+	{
+		new_->gr_name = NULL;
+		new_->pw_name = NULL;
 	}
 	if (ls->flag & color)
 		/* set_color(new_) */;

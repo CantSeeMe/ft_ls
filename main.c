@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 16:54:32 by jye               #+#    #+#             */
-/*   Updated: 2017/04/18 22:36:47 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/19 03:19:04 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ void	set_var(t_cdir *cdir, t_file *file, t_lsenv *ls)
 		fstat = &file->stat;
 		group = getgrgid(fstat->st_gid);
 		user = getpwuid(fstat->st_uid);
+		file->gr_name = strdup(group->gr_name);
+		file->pw_name = strdup(user->pw_name);
 		len = strlen(group->gr_name);
 		if (len > cdir->gr_len)
 			cdir->gr_len = len;
@@ -49,11 +51,25 @@ void	set_var(t_cdir *cdir, t_file *file, t_lsenv *ls)
 		len = intlen(fstat->st_nlink);
 		if (len > cdir->nlink_len)
 			cdir->nlink_len = len;
+		if (S_ISCHR(file->stat.st_mode) ||
+			S_ISBLK(file->stat.st_mode))
+			if (cdir->size_len < 9)
+				cdir->size_len = 9;
 		cdir->block += fstat->st_blocks;
 		if (S_ISLNK(fstat->st_mode))
-			readlink(file->path_to_file, file->sym_link, PATH_MAX);
-		if (ls->flag & human_size)
-		{}
+		{
+			errno = 0;
+			file->sym = readlink(file->path_to_file, file->sym_link, PATH_MAX);
+			if (file->sym > 0)
+				file->sym[file->sym_link] = 0;
+			else
+				dprintf(STDERR_FILENO, "%s: cannot read symbolic link '%s': %s\n",
+						ls->pname,
+						file->path_to_file,
+						strerror(errno));
+		}
+		else
+			file->sym = 0;
 		set_timespec(file, ls);
 	}
 	else
@@ -67,7 +83,6 @@ void	read_cwd(t_cdir *cdir, t_lsenv *ls)
 	t_file		*file;
 	t_dirent	*cfile;
 	size_t		flen;
-	size_t		nb_file;
 
 	if ((cwd = cdir->cwd) == NULL)
 	{
@@ -82,7 +97,6 @@ void	read_cwd(t_cdir *cdir, t_lsenv *ls)
 		return ;
 	}
 	cwd_file = cdir->cwd_file;
-	nb_file = 0;
 	while ((cfile = readdir(cwd)) != NULL)
 	{
 		errno = 0;
@@ -106,9 +120,8 @@ void	read_cwd(t_cdir *cdir, t_lsenv *ls)
 			set_var(cdir, file, ls);
 		append_lst__(cwd_file, file);
 		cwd_file = cwd_file->next;
-		nb_file += 1;
+		cdir->cwd_nb_file += 1;
 	}
-	cdir->cwd_nb_file = nb_file;
 	pop_lst__(&cdir->cwd_file, NULL);
 }
 

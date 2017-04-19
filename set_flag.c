@@ -6,13 +6,13 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/15 22:08:07 by jye               #+#    #+#             */
-/*   Updated: 2017/04/18 20:45:14 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/19 03:30:51 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-static void	usage(char *prog_name)
+static void	usage(const char *prog_name)
 {
 	(void)prog_name;
 	exit(EXIT_FAILURE);
@@ -20,8 +20,8 @@ static void	usage(char *prog_name)
 
 int			set_flag(int ac, char **av)
 {
-	char	c;
-	int		flag;
+	register char	c;
+	register int	flag;
 
 	flag = 0;
 	while ((c = get_opt(ac, av, LS_FLAGS)) != -1)
@@ -44,8 +44,6 @@ int			set_flag(int ac, char **av)
 			flag = (flag & ~atim) | ctim;
 		else if (c == 'f')
 			flag = (flag & 0) | (no_sort | show_all);
-		else if (c == 'h')
-			flag |= human_size;
 		else if (c == 'G')
 			flag |= color;
 		else
