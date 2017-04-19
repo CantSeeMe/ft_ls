@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/10 18:22:04 by jye               #+#    #+#             */
-/*   Updated: 2017/04/19 03:29:30 by root             ###   ########.fr       */
+/*   Updated: 2017/04/19 17:32:14 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,6 @@ char		*perm_format(register const mode_t st_mode, const char *path)
 		9[perm] = (st_mode & (S_IXOTH)) ? 't' : 'T';
 	else
 		9[perm] = st_mode & S_IXOTH ? 'x' : '-';
-//	10[perm] = get_xattr(path);
+	10[perm] = get_xattr(path);
 	return (perm);
 }

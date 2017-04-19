@@ -6,23 +6,45 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 16:54:32 by jye               #+#    #+#             */
-/*   Updated: 2017/04/19 03:19:04 by root             ###   ########.fr       */
+/*   Updated: 2017/04/19 22:08:22 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-size_t	intlen(long integer)
+void	set_symlink(t_file *file)
 {
-	size_t	z;
+	errno = 0;
+	file->sym = readlink(file->path_to_file, file->sym_link, PATH_MAX);
+	if (file->sym > 0)
+		file->sym[file->sym_link] = 0;
+	else
+		dprintf(STDERR_FILENO, "ft_ls: cannot read symbolic link '%s': %s\n",
+				file->path_to_file,
+				strerror(errno));
+}
 
-	z = 1;
-	while (integer > 9)
-	{
-		integer /= 10;
-		++z;
-	}
-	return z;
+void	set_var_(t_cdir *cdir, t_file *file, t_stat *fstat)
+{
+	size_t len;
+
+	len = strlen(file->gr_name);
+	if (len > cdir->gr_len)
+		cdir->gr_len = len;
+	len = strlen(file->pw_name);
+	if (len > cdir->pw_len)
+		cdir->pw_len = len;
+	if (fstat->st_size > cdir->size)
+		cdir->size = fstat->st_size;
+	if (fstat->st_nlink > cdir->nlink)
+		cdir->nlink = fstat->st_nlink;
+	if (S_ISCHR(fstat->st_mode) || S_ISBLK(fstat->st_mode))
+		cdir->spe_ = 1;
+	cdir->block += fstat->st_blocks;
+	if (S_ISLNK(fstat->st_mode))
+		set_symlink(file);
+	else
+		file->sym = 0;
 }
 
 void	set_var(t_cdir *cdir, t_file *file, t_lsenv *ls)
@@ -39,85 +61,58 @@ void	set_var(t_cdir *cdir, t_file *file, t_lsenv *ls)
 		user = getpwuid(fstat->st_uid);
 		file->gr_name = strdup(group->gr_name);
 		file->pw_name = strdup(user->pw_name);
-		len = strlen(group->gr_name);
-		if (len > cdir->gr_len)
-			cdir->gr_len = len;
-		len = strlen(user->pw_name);
-		if (len > cdir->pw_len)
-			cdir->pw_len = len;
-		len = intlen(fstat->st_size);
-		if (len > cdir->size_len)
-			cdir->size_len = len;
-		len = intlen(fstat->st_nlink);
-		if (len > cdir->nlink_len)
-			cdir->nlink_len = len;
-		if (S_ISCHR(file->stat.st_mode) ||
-			S_ISBLK(file->stat.st_mode))
-			if (cdir->size_len < 9)
-				cdir->size_len = 9;
-		cdir->block += fstat->st_blocks;
-		if (S_ISLNK(fstat->st_mode))
-		{
-			errno = 0;
-			file->sym = readlink(file->path_to_file, file->sym_link, PATH_MAX);
-			if (file->sym > 0)
-				file->sym[file->sym_link] = 0;
-			else
-				dprintf(STDERR_FILENO, "%s: cannot read symbolic link '%s': %s\n",
-						ls->pname,
-						file->path_to_file,
-						strerror(errno));
-		}
-		else
-			file->sym = 0;
-		set_timespec(file, ls);
+		set_var_(cdir, file, fstat);
 	}
-	else
-		set_timespec(file, ls);
+	set_timespec(file, ls);
+}
+
+t_file	*read_file_(t_cdir *cdir, t_dirent *cfile, t_lsenv *ls)
+{
+	t_file	*file;
+	size_t	flen;
+
+	errno = 0;
+	if (cfile->d_name[0] == '.' && !(ls->flag & show_all))
+		return (NULL);
+	flen = strlen(cfile->d_name);
+	if (cdir->max_len < flen)
+		cdir->max_len = flen;
+	file = init_file__(cdir, cfile, ls);
+	if (lstat(file->path_to_file, &file->stat) == -1)
+	{
+		file->errno_ = 1;
+		dprintf(2, "%s: %s: %s\n", ls->pname, file->path_to_file,
+				strerror(errno));
+		free_file(file);
+		return (NULL);
+	}
+	if (ls->flag & (TIME_FLAG | ell))
+		set_var(cdir, file, ls);
+	return (file);
 }
 
 void	read_cwd(t_cdir *cdir, t_lsenv *ls)
 {
-	DIR			*cwd;
 	t_lst		*cwd_file;
 	t_file		*file;
 	t_dirent	*cfile;
-	size_t		flen;
 
-	if ((cwd = cdir->cwd) == NULL)
+	if (cdir->cwd == NULL)
 	{
-		dprintf(2, "%s: %s: %s\n", ls->pname,
-									cdir->cur_path,
-									strerror(cdir->errno_));
+		dprintf(2, "%s: %s: %s\n", ls->pname, cdir->cur_path,
+				strerror(cdir->errno_));
 		return ;
 	}
-	if ((cdir->cwd_file = init_lst__(NULL)) == NULL)
+	if ((cwd_file = init_lst__(NULL)) == NULL)
 	{
-		dprintf(2, "%s: line %d:  malloc failed", ls->pname, __LINE__ - 2);
-		return ;
+		dprintf(STDERR_FILENO, "beep boop, can't malloc exiting...\n");
+		exit(EXIT_BIG_FAILURE);
 	}
-	cwd_file = cdir->cwd_file;
-	while ((cfile = readdir(cwd)) != NULL)
+	cdir->cwd_file = cwd_file;
+	while ((cfile = readdir(cdir->cwd)) != NULL)
 	{
-		errno = 0;
-		if (cfile->d_name[0] == '.' && !(ls->flag & show_all))
+		if ((file = read_file_(cdir, cfile, ls)) == NULL)
 			continue ;
-		flen = strlen(cfile->d_name);
-		if (cdir->max_len < flen)
-			cdir->max_len = flen;
-		if ((file = init_file__(cdir, cfile, ls)) == NULL)
-		{
-			perror(ls->pname);
-			continue ;
-		}
-		if (lstat(file->path_to_file, &file->stat) == -1)
-		{
-			perror(ls->pname);
-			free_file(file);
-			continue ;
-		}
-		if (ls->flag & (TIME_FLAG | ell))
-			set_var(cdir, file, ls);
 		append_lst__(cwd_file, file);
 		cwd_file = cwd_file->next;
 		cdir->cwd_nb_file += 1;
@@ -129,8 +124,7 @@ void	list_dir_(t_lsenv *ls)
 {
 	t_cdir	*cdir;
 
-	if ((cdir = init_dir__(ls->dir->data, ls)) == NULL)
-		return ;
+	cdir = init_dir__(ls->dir->data, ls);
 	read_cwd(cdir, ls);
 	if (!cdir->cwd_file)
 	{
@@ -150,32 +144,42 @@ void	list_dir_(t_lsenv *ls)
 	free_cdir(cdir);
 }
 
+t_file	*read_arg_(char *path, t_cdir *cdir, t_lsenv *ls)
+{
+	size_t	slen;
+	t_file	*file;
+
+	if ((file = malloc(sizeof(*file))) == NULL)
+	{
+		dprintf(STDERR_FILENO, "beep boop, can't malloc exiting...\n");
+		exit(EXIT_BIG_FAILURE);
+	}
+	file->path_to_file = NULL;
+	file->name = path;
+	slen = strlen(file->name);
+	if (cdir->max_len < slen)
+		cdir->max_len = slen;
+	lstat(path, &file->stat);
+	if (ls->flag & (TIME_FLAG | ell))
+		set_var(cdir, file, ls);
+	return (file);
+}
+
 void	list_args(t_lsenv *ls)
 {
 	t_cdir	*cdir;
-	t_file	*file;
 	t_lst	*args;
 	t_lst	*cp_ar;
-	size_t	slen;
 
-	cdir = malloc(sizeof *cdir);
-	memset(cdir, 0, sizeof *cdir);
+	cdir = malloc(sizeof(*cdir));
+	memset(cdir, 0, sizeof(*cdir));
 	args = ls->file;
 	cdir->cwd_file = init_lst__(NULL);
 	cp_ar = cdir->cwd_file;
 	while (args)
 	{
-		file = malloc(sizeof *file);
-		file->path_to_file = NULL;
-		file->name = (char *)args->data;
-		slen = strlen(file->name);
-		if (cdir->max_len < slen)
-			cdir->max_len = slen;
-		lstat(file->name, &file->stat);
-		if (ls->flag & (TIME_FLAG | ell))
-			set_timespec(file, ls);
+		append_lst__(cp_ar, read_arg_(args->data, cdir, ls));
 		pop_lst__(&args, NULL);
-		append_lst__(cp_ar, file);
 		cp_ar = cp_ar->next;
 		cdir->cwd_nb_file += 1;
 	}
@@ -196,17 +200,13 @@ void	list_dir(t_lsenv *ls)
 	while (ls->dir)
 	{
 		if (ls->flag & show_folder)
-			printf("%s:\n",ls->dir->data);
+			printf("%s:\n", ls->dir->data);
 		list_dir_(ls);
 		pop_lst__(&ls->dir, NULL);
 		if (ls->dir)
 			printf("\n");
 	}
 }
-
-/* -------------------------------------------- */
-/* -------------------------------------------- */
-/* -------------------------------------------- */
 
 t_lst	*get_dir_to_list(t_lsenv *ls)
 {
@@ -218,24 +218,13 @@ t_lst	*get_dir_to_list(t_lsenv *ls)
 	args = ls->dir;
 	if ((ldir = init_lst__(NULL)) == NULL)
 	{
-		dprintf(STDERR_FILENO, "%s: line %d: malloc failed\n",
-				ls->pname,
-				__LINE__ - 2);
-		exit(EXIT_FAILURE);
+		dprintf(STDERR_FILENO, "beep boop, can't malloc exiting...\n");
+		exit(EXIT_BIG_FAILURE);
 	}
 	ldir_ape = ldir;
-	ls->dir = NULL;
 	while (args)
 	{
-		if ((cdir = init_dir__(args->data, ls)) == NULL)
-		{
-			dprintf(STDERR_FILENO, "%s: line %d: malloc failed, cannot" \
-					" list directory %s\n",
-					ls->pname,
-					__LINE__ - 2,
-					args->data);
-			exit(EXIT_FAILURE);
-		}
+		cdir = init_dir__(args->data, ls);
 		append_lst__(ldir_ape, cdir);
 		ldir_ape = ldir_ape->next;
 		pop_lst__(&args, NULL);
@@ -244,15 +233,13 @@ t_lst	*get_dir_to_list(t_lsenv *ls)
 	return (ldir);
 }
 
-void	go_git_gud(t_cdir *cdir, t_lst *cur_dir_to_list, t_lsenv *ls)
+void	go_get_dir(t_cdir *cdir, t_lst *cur_dir_to_list, t_lsenv *ls)
 {
 	t_lst	*a;
 	t_lst	*cwd_file;
 	t_file	*file;
 	t_cdir	*new_;
 
-	if (cdir->cwd_nb_file == 0)
-		return ;
 	if (ls->flag & mtim)
 		cdir->cwd_file = sort_int(&cdir->cwd_file, cdir->cwd_nb_file);
 	else if (!(ls->flag & no_sort))
@@ -262,13 +249,11 @@ void	go_git_gud(t_cdir *cdir, t_lst *cur_dir_to_list, t_lsenv *ls)
 	while (cwd_file)
 	{
 		file = (t_file *)cwd_file->data;
-		if (S_ISDIR(file->stat.st_mode) && strcmp(file->name, CWD) && strcmp(file->name, ".."))
+		if (S_ISDIR(file->stat.st_mode) &&
+			strcmp(file->name, CWD) &&
+			strcmp(file->name, ".."))
 		{
-			if ((new_ = init_dir__(file->path_to_file, ls)) == NULL)
-			{
-				cwd_file = cwd_file->next;
-				continue ;
-			}
+			new_ = init_dir__(file->path_to_file, ls);
 			append_lst__(a, new_);
 			a = a->next;
 		}
@@ -294,7 +279,8 @@ void	list_rdir(t_lsenv *ls)
 		if (ls->flag & show_folder)
 			printf("%s:\n", cdir->cur_path);
 		read_cwd(cdir, ls);
-		go_git_gud(cdir, cur_dir_to_list, ls);
+		if (cdir->cwd_nb_file)
+			go_get_dir(cdir, cur_dir_to_list, ls);
 		print_list(cdir, ls);
 		pop_lst__(&cur_dir_to_list, &free_cdir);
 		if (cur_dir_to_list)
@@ -307,10 +293,6 @@ int		main(int ac, char **av)
 	t_lsenv	ls;
 
 	set_ls_args(&ls, ac, av);
-/* #ifdef __APPLE__ */
-/* 	if (ls.flag & color) */
-/* 		set_color(&ls); */
-/* #endif */
 	if (ls.flag & recursive)
 		list_rdir(&ls);
 	else

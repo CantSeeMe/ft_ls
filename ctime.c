@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/09 21:34:02 by jye               #+#    #+#             */
-/*   Updated: 2017/04/19 03:32:58 by root             ###   ########.fr       */
+/*   Updated: 2017/04/19 18:40:01 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ char	*time_format(const time_t file_timespec)
 		12[human_time] = 0;
 	}
 	else if (cur_timespec < file_timespec &&
-			 IS_TOO_NEW(file_timespec - cur_timespec))
+			IS_TOO_NEW(file_timespec - cur_timespec))
 	{
 		memmove(human_time + 8, human_time + 16, 4);
 		7[human_time] = 0x20;

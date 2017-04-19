@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/07 22:38:56 by jye               #+#    #+#             */
-/*   Updated: 2017/04/18 01:36:27 by root             ###   ########.fr       */
+/*   Updated: 2017/04/19 18:44:29 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static int	unknow_flag(char *pname, char c)
 {
-	dprintf(2 ,"%s: invalid option -- '%c'\n", pname, c);
+	dprintf(2, "%s: invalid option -- '%c'\n", pname, c);
 	return ('?');
 }
 

@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 17:04:26 by jye               #+#    #+#             */
-/*   Updated: 2017/04/19 03:32:56 by root             ###   ########.fr       */
+/*   Updated: 2017/04/19 19:34:43 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,8 @@
 # define IS_TOO_OLD(timespec) ((timespec) > SIX_MONTH_SEC)
 # define IS_TOO_NEW(timespec) ((timespec) > SIX_MONTH_SEC)
 # define TIME_FLAG (ctim | atim | mtim)
-//# define DEFAULT "\e[0m"
+# define EXIT_BIG_FAILURE 2
+# define RESET_ATTRIBUTE "\e[0m"
 # define LS_FLAGS "lRratuUGf1"
 # define CWD "."
 # define MIN_WIDTH 1
@@ -64,28 +65,29 @@ typedef struct			s_cdir
 	size_t		max_len;
 	size_t		pw_len;
 	size_t		gr_len;
-	size_t		size_len;
-	size_t		nlink_len;
+	off_t		size;
+	nlink_t		nlink;
 	quad_t		block;
 	int			errno_;
+	int			spe_;
 }						t_cdir;
 
 typedef struct			s_file
 {
-	t_stat	   		stat;
-	char			*gr_name; // strdup if NULL show gid
-	char			*pw_name; // strdup, if NULL show uid
-	struct timespec	*time; // which st_*tim to use;
+	t_stat			stat;
+	char			*gr_name;
+	char			*pw_name;
+	struct timespec	*time;
 	char			*name;
-	char	   		*path_to_file;
+	char			*path_to_file;
 	char			sym_link[PATH_MAX];
 	ssize_t			sym;
+	int				errno_;
 }						t_file;
 
 typedef struct			s_lsenv
 {
 	char		*pname;
-//	char		*color[11];
 	t_lst		*file;
 	t_lst		*dir;
 	t_winsize	winsize;
@@ -128,7 +130,6 @@ t_file					*init_file__(t_cdir *cdir,
 t_cdir					*init_dir__(char *path, t_lsenv *ls);
 int						init_fstat__(t_file *file_data);
 
-
 /*
 ** get_ arg / opt
 */
@@ -156,7 +157,8 @@ char					*time_format(const time_t file_timespec);
 /*
 ** permission format
 */
-char					*perm_format(register const mode_t st_mode, const char *path);
+char					*perm_format(register const mode_t st_mode,
+									const char *path);
 
 /*
 ** free custom struct

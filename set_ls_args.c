@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 18:58:37 by jye               #+#    #+#             */
-/*   Updated: 2017/04/17 20:36:11 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/19 20:10:42 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,6 +132,6 @@ void			set_ls_args(t_lsenv *ls, int ac, char **av)
 	if (set_ls_args_(ls, args))
 		push_lst__(&ls->dir, CWD);
 	else if ((ls->dir && ls->file) ||
-			(ls->dir &&ls->dir->next))
+			(ls->dir && ls->dir->next))
 		ls->flag |= show_folder;
 }
