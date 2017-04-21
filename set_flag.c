@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/15 22:08:07 by jye               #+#    #+#             */
-/*   Updated: 2017/04/19 21:17:08 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/21 17:25:04 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,5 +57,7 @@ int			set_flag(int ac, char **av)
 		else
 			flag |= flag_p2(c);
 	}
+	if (!isatty(STDOUT_FILENO))
+		flag =  (flag & ~(color)) | one;
 	return (flag);
 }

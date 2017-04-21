@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/17 20:14:05 by jye               #+#    #+#             */
-/*   Updated: 2017/04/19 21:55:45 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/21 17:33:34 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,10 +57,7 @@ t_file		*init_file__(t_cdir *cdir, t_dirent *cfile, t_lsenv *ls)
 		new_->gr_name = NULL;
 		new_->pw_name = NULL;
 	}
-	if (ls->flag & color)
-		/* set_color(new_) */;
-	else
-		new_->name = strdup(cfile->d_name);
+	new_->name = strdup(cfile->d_name);
 	if (!new_->name || !new_->path_to_file)
 	{
 		dprintf(STDERR_FILENO, "beep boop, can't malloc exiting...\n");

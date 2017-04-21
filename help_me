@@ -1,13 +1,3 @@
-static const char		g_ls_color[] = {"\e[30m", "\e[31m", "\e[32m", "\e[33m",
-										"\e[34m", "\e[35m", "\e[36m", "\e[37m",
-										"\e[40m", "\e[41m", "\e[42m", "\e[43m",
-										"\e[44m", "\e[45m", "\e[46m", "\e[47m",
-										"\e[1m\e[30m", "\e[1m\e[31m",
-										"\e[1m\e[32m", "\e[1m\e[33m",
-										"\e[1m\e[34m", "\e[1m\e[35m",
-										"\e[1m\e[36m", "\e[1m\e[37m"};
-
-
 
 usage: ls [flags] [args...]
 

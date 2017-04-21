@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 16:54:32 by jye               #+#    #+#             */
-/*   Updated: 2017/04/19 22:08:22 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/21 22:53:08 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,7 +159,14 @@ t_file	*read_arg_(char *path, t_cdir *cdir, t_lsenv *ls)
 	slen = strlen(file->name);
 	if (cdir->max_len < slen)
 		cdir->max_len = slen;
-	lstat(path, &file->stat);
+	if ((lstat(path, &file->stat)) == -1)
+	{
+		file->errno_ = 1;
+		dprintf(2, "%s: %s: %s\n", ls->pname, file->path_to_file,
+				strerror(errno));
+		free_file(file);
+		return (NULL);
+	}
 	if (ls->flag & (TIME_FLAG | ell))
 		set_var(cdir, file, ls);
 	return (file);
@@ -167,9 +174,10 @@ t_file	*read_arg_(char *path, t_cdir *cdir, t_lsenv *ls)
 
 void	list_args(t_lsenv *ls)
 {
-	t_cdir	*cdir;
+ 	t_cdir	*cdir;
 	t_lst	*args;
 	t_lst	*cp_ar;
+	t_file	*file;
 
 	cdir = malloc(sizeof(*cdir));
 	memset(cdir, 0, sizeof(*cdir));
@@ -178,7 +186,9 @@ void	list_args(t_lsenv *ls)
 	cp_ar = cdir->cwd_file;
 	while (args)
 	{
-		append_lst__(cp_ar, read_arg_(args->data, cdir, ls));
+		if ((file = read_arg_(args->data, cdir, ls)) == NULL)
+			continue ;
+		append_lst__(cp_ar, file);
 		pop_lst__(&args, NULL);
 		cp_ar = cp_ar->next;
 		cdir->cwd_nb_file += 1;

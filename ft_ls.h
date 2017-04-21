@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 17:04:26 by jye               #+#    #+#             */
-/*   Updated: 2017/04/19 19:34:43 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/21 22:50:46 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,12 @@
 # define IS_TOO_NEW(timespec) ((timespec) > SIX_MONTH_SEC)
 # define TIME_FLAG (ctim | atim | mtim)
 # define EXIT_BIG_FAILURE 2
+# define INDEX_HASH(c) ((((c) & 0x20) >> 5) + ((c) % 0x20))
 # define RESET_ATTRIBUTE "\e[0m"
 # define LS_FLAGS "lRratuUGf1"
+# define NONE ""
+# define DEFAULT_LSCOLORS "exfxcxdxbxegedabagacad"
+# define LSCOLORS_CHAR "abcdefghABCDEFGHx"
 # define CWD "."
 # define MIN_WIDTH 1
 
@@ -80,6 +84,8 @@ typedef struct			s_file
 	struct timespec	*time;
 	char			*name;
 	char			*path_to_file;
+	char			*fcolor;
+	char			*bcolor;
 	char			sym_link[PATH_MAX];
 	ssize_t			sym;
 	int				errno_;
@@ -174,4 +180,17 @@ void					push_lst__(t_lst **node, void *data);
 void					pop_lst__(t_lst **node, void (*del)());
 void					append_lst__(t_lst *node, void *data);
 
+static const char		g_ls_fcolor[][12] = {"\e[30m0", "\e[31m1", "\e[32m2", "\e[33m3",
+											 "\e[34m4", "\e[35m5", "\e[36m6", "\e[37m8",
+											 "\e[1m\e[30m11", "\e[1m\e[31m12",
+											 "\e[1m\e[32m13", "\e[1m\e[33m14",
+											 "\e[1m\e[34m15", "\e[1m\e[35m16",
+											 "\e[1m\e[36m17", "\e[1m\e[37m18"};
+
+static const char		g_ls_bcolor[][12] = {"\e[40m", "\e[41m", "\e[42m", "\e[43m",
+											 "\e[44m", "\e[45m", "\e[46m", "\e[47m",
+											 "\e[1m\e[40m", "\e[1m\e[41m",
+											 "\e[1m\e[42m", "\e[1m\e[43m",
+											 "\e[1m\e[44m", "\e[1m\e[45m",
+											 "\e[1m\e[46m", "\e[1m\e[47m"};
 #endif
