@@ -4,3 +4,5 @@ ft_ls
 .#*
 a.out
 a.out*
+obj/*
+*.o
