@@ -6,19 +6,18 @@
 /*   By: root <jye@student.42.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/13 20:03:32 by root              #+#    #+#             */
-/*   Updated: 2017/04/19 20:47:07 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/22 01:44:58 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-static char	**format(t_lst *a, size_t cwd_nb_file)
+static t_file	**format(t_lst *a, size_t cwd_nb_file)
 {
-	char	**new_;
-	t_file	*f;
+	t_file	**new_;
 	int		i;
 
-	if ((new_ = malloc((sizeof(*new_)) * cwd_nb_file)) == NULL)
+	if ((new_ = malloc(((sizeof(*new_)) * cwd_nb_file))) == NULL)
 	{
 		dprintf(STDERR_FILENO, "beep boop, can't print exiting...\n");
 		exit(EXIT_BIG_FAILURE);
@@ -26,14 +25,13 @@ static char	**format(t_lst *a, size_t cwd_nb_file)
 	i = 0;
 	while (a)
 	{
-		f = (t_file *)a->data;
-		new_[i++] = f->name;
+		new_[i++] = a->data;
 		a = a->next;
 	}
 	return (new_);
 }
 
-static int	col(int ws_col, int it, int *pad)
+static int		col(int ws_col, int it, int *pad)
 {
 	int	skip_;
 	int	z;
@@ -48,9 +46,9 @@ static int	col(int ws_col, int it, int *pad)
 	return (skip_);
 }
 
-static void	print_many_per_line(t_cdir *cdir, t_lsenv *ls)
+static void		print_many_per_line(t_cdir *cdir, t_lsenv *ls)
 {
-	char	**a;
+	t_file	**a;
 	int		pad;
 	int		skip_;
 	size_t	i;
@@ -64,7 +62,9 @@ static void	print_many_per_line(t_cdir *cdir, t_lsenv *ls)
 	0[it] = 0;
 	while (it[0] < it[1])
 	{
-		printf("%*s", -pad, a[i]);
+		printf("%s%s%s%s", a[i]->fcolor, a[i]->bcolor,
+			   a[i]->name, RESET_ATTRIBUTE);
+		printf("%*s", (a[i]->nlen - pad), NONE);
 		i += skip_;
 		if (i >= it[1])
 		{
@@ -76,7 +76,7 @@ static void	print_many_per_line(t_cdir *cdir, t_lsenv *ls)
 	free(a);
 }
 
-static void	print_one_per_line(t_cdir *cdir)
+static void		print_one_per_line(t_cdir *cdir)
 {
 	t_lst	*cwd_file;
 	t_file	*file;
@@ -85,12 +85,16 @@ static void	print_one_per_line(t_cdir *cdir)
 	while (cwd_file)
 	{
 		file = (t_file *)cwd_file->data;
-		printf("%s\n", file->name);
+		printf("%s%s%s%s\n",
+			   file->fcolor,
+			   file->bcolor,
+			   file->name,
+			   RESET_ATTRIBUTE);
 		cwd_file = cwd_file->next;
 	}
 }
 
-void		print_list(t_cdir *cdir, t_lsenv *ls)
+void			print_list(t_cdir *cdir, t_lsenv *ls)
 {
 	if (ls->flag & one)
 		print_one_per_line(cdir);

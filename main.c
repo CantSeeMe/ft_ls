@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 16:54:32 by jye               #+#    #+#             */
-/*   Updated: 2017/04/21 22:53:08 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/22 01:46:29 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,13 @@ void	set_var(t_cdir *cdir, t_file *file, t_lsenv *ls)
 		set_var_(cdir, file, fstat);
 	}
 	set_timespec(file, ls);
+	if (ls->flag & color)
+		set_color(file);
+	else
+	{
+		file->fcolor = NONE;
+		file->bcolor = NONE;
+	}
 }
 
 t_file	*read_file_(t_cdir *cdir, t_dirent *cfile, t_lsenv *ls)
@@ -78,6 +85,7 @@ t_file	*read_file_(t_cdir *cdir, t_dirent *cfile, t_lsenv *ls)
 	if (cdir->max_len < flen)
 		cdir->max_len = flen;
 	file = init_file__(cdir, cfile, ls);
+	file->nlen = flen;
 	if (lstat(file->path_to_file, &file->stat) == -1)
 	{
 		file->errno_ = 1;
@@ -86,7 +94,7 @@ t_file	*read_file_(t_cdir *cdir, t_dirent *cfile, t_lsenv *ls)
 		free_file(file);
 		return (NULL);
 	}
-	if (ls->flag & (TIME_FLAG | ell))
+	if (ls->flag & (TIME_FLAG | ell | color))
 		set_var(cdir, file, ls);
 	return (file);
 }
@@ -157,6 +165,7 @@ t_file	*read_arg_(char *path, t_cdir *cdir, t_lsenv *ls)
 	file->path_to_file = NULL;
 	file->name = path;
 	slen = strlen(file->name);
+	file->nlen = slen;
 	if (cdir->max_len < slen)
 		cdir->max_len = slen;
 	if ((lstat(path, &file->stat)) == -1)
@@ -167,7 +176,7 @@ t_file	*read_arg_(char *path, t_cdir *cdir, t_lsenv *ls)
 		free_file(file);
 		return (NULL);
 	}
-	if (ls->flag & (TIME_FLAG | ell))
+	if (ls->flag & (TIME_FLAG | ell | color))
 		set_var(cdir, file, ls);
 	return (file);
 }

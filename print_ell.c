@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/18 17:44:24 by jye               #+#    #+#             */
-/*   Updated: 2017/04/19 21:11:18 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/22 01:06:46 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int		intlen(long integer)
 void	long_format(t_file *file, int i[4])
 {
 	if (S_ISCHR(file->stat.st_mode) || S_ISBLK(file->stat.st_mode))
-		printf("%s %*d %*s %*s %*d,%5d %s %s %s %s\n",
+		printf("%s %*d %*s %*s %*d,%5d %s %s%s%s%s %s %s\n",
 				perm_format(file->stat.st_mode, file->path_to_file),
 				i[2], file->stat.st_nlink,
 				-(i[0]), file->pw_name,
@@ -36,18 +36,20 @@ void	long_format(t_file *file, int i[4])
 				i[3] - 6, file->stat.st_rdev >> 24,
 				file->stat.st_rdev & 0377,
 				time_format(file->time->tv_sec),
-				file->name,
+				file->fcolor, file->bcolor,
+				file->name, RESET_ATTRIBUTE,
 				file->sym > 0 ? "->" : "",
 				file->sym > 0 ? file->sym_link : "");
 	else
-		printf("%s %*d %*s %*s %*lld %s %s %s %s\n",
+		printf("%s %*d %*s %*s %*lld %s %s%s%s%s %s %s\n",
 				perm_format(file->stat.st_mode, file->path_to_file),
 				i[2], file->stat.st_nlink,
 				-(i[0]), file->pw_name,
 				-(i[1]), file->gr_name,
 				i[3], file->stat.st_size,
 				time_format(file->time->tv_sec),
-				file->name,
+				file->fcolor, file->bcolor,
+				file->name, RESET_ATTRIBUTE,
 				file->sym > 0 ? "->" : "",
 				file->sym > 0 ? file->sym_link : "");
 }

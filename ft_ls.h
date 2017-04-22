@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 17:04:26 by jye               #+#    #+#             */
-/*   Updated: 2017/04/21 22:50:46 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/22 01:33:47 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@
 # define IS_TOO_NEW(timespec) ((timespec) > SIX_MONTH_SEC)
 # define TIME_FLAG (ctim | atim | mtim)
 # define EXIT_BIG_FAILURE 2
-# define INDEX_HASH(c) ((((c) & 0x20) >> 5) + ((c) % 0x20))
+# define INDEX_HASH(c) (((((c) % 0x20) * 2) - (((c) & 0x20) >> 5)) - 1)
 # define RESET_ATTRIBUTE "\e[0m"
 # define LS_FLAGS "lRratuUGf1"
 # define NONE ""
@@ -83,9 +83,10 @@ typedef struct			s_file
 	char			*pw_name;
 	struct timespec	*time;
 	char			*name;
+	size_t			nlen;
 	char			*path_to_file;
-	char			*fcolor;
-	char			*bcolor;
+	const char		*fcolor;
+	const char		*bcolor;
 	char			sym_link[PATH_MAX];
 	ssize_t			sym;
 	int				errno_;
@@ -126,6 +127,7 @@ void					list_args(t_lsenv *ls);
 ** additional bullshit because of norm ¯\_(ツ)_/¯
 */
 void					set_timespec(t_file *file, t_lsenv *ls);
+void					set_color(t_file *file);
 
 /*
 ** init struct
@@ -180,17 +182,22 @@ void					push_lst__(t_lst **node, void *data);
 void					pop_lst__(t_lst **node, void (*del)());
 void					append_lst__(t_lst *node, void *data);
 
-static const char		g_ls_fcolor[][12] = {"\e[30m0", "\e[31m1", "\e[32m2", "\e[33m3",
-											 "\e[34m4", "\e[35m5", "\e[36m6", "\e[37m8",
-											 "\e[1m\e[30m11", "\e[1m\e[31m12",
-											 "\e[1m\e[32m13", "\e[1m\e[33m14",
-											 "\e[1m\e[34m15", "\e[1m\e[35m16",
-											 "\e[1m\e[36m17", "\e[1m\e[37m18"};
+static const char		g_ls_fcolor[][12] = {"\e[30m", "\e[1m\e[30m",
+											 "\e[31m", "\e[1m\e[31m",
+											 "\e[32m", "\e[1m\e[32m",
+											 "\e[33m", "\e[1m\e[33m",
+											 "\e[34m", "\e[1m\e[34m",
+											 "\e[35m", "\e[1m\e[35m",
+											 "\e[36m", "\e[1m\e[36m",
+											 "\e[37m", "\e[1m\e[37m"};
 
-static const char		g_ls_bcolor[][12] = {"\e[40m", "\e[41m", "\e[42m", "\e[43m",
-											 "\e[44m", "\e[45m", "\e[46m", "\e[47m",
-											 "\e[1m\e[40m", "\e[1m\e[41m",
-											 "\e[1m\e[42m", "\e[1m\e[43m",
-											 "\e[1m\e[44m", "\e[1m\e[45m",
-											 "\e[1m\e[46m", "\e[1m\e[47m"};
+static const char		g_ls_bcolor[][12] = {"\e[40m", "\e[1m\e[40m",
+											 "\e[41m", "\e[1m\e[41m",
+											 "\e[42m", "\e[1m\e[42m",
+											 "\e[43m", "\e[1m\e[43m",
+											 "\e[44m", "\e[1m\e[44m",
+											 "\e[45m", "\e[1m\e[45m",
+											 "\e[46m", "\e[1m\e[46m",
+											 "\e[47m", "\e[1m\e[47m"};
+
 #endif

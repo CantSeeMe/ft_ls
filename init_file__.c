@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/17 20:14:05 by jye               #+#    #+#             */
-/*   Updated: 2017/04/21 17:33:34 by jye              ###   ########.fr       */
+/*   Updated: 2017/04/22 01:20:00 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,8 @@ t_file		*init_file__(t_cdir *cdir, t_dirent *cfile, t_lsenv *ls)
 	}
 	new_->errno_ = 0;
 	new_->path_to_file = cat_path_file(cdir->cur_path, cfile->d_name);
+	new_->fcolor = NONE;
+	new_->bcolor = NONE;
 	if (!(ls->flag & ell))
 	{
 		new_->gr_name = NULL;
