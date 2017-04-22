@@ -2,6 +2,7 @@ ft_ls
 *~
 \#*\#
 .#*
+*.a
 a.out
 a.out*
 obj/*
