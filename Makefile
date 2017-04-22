@@ -6,7 +6,7 @@
 #    By: jye <marvin@42.fr>                         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/12/19 16:32:14 by jye               #+#    #+#              #
-#    Updated: 2017/04/22 21:31:54 by jye              ###   ########.fr        #
+#    Updated: 2017/04/22 22:03:00 by jye              ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -40,7 +40,7 @@ NAME			=	ft_ls
 
 # Rules
 
-all			: $(NAME)
+all			: lib $(NAME)
 
 .PHONY		: clean fclean re
 
@@ -55,7 +55,7 @@ fclean		: clean
 
 re			: fclean all
 
-$(NAME)		: $(OBJ_FILE) $(INC_PATH) lib
+$(NAME)		: $(OBJ_FILE) $(INC_PATH)
 	$(CC) $(LIB) $(OBJ_FILE) -o $@
 
 lib			:
