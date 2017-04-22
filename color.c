@@ -6,13 +6,13 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/21 22:25:52 by jye               #+#    #+#             */
-/*   Updated: 2017/04/22 01:55:45 by root             ###   ########.fr       */
+/*   Updated: 2017/04/22 03:46:35 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-static void	set_default_color(const char **lscolors, int i)
+static void	set_default_color(int i)
 {
 	char	*default_;
 
@@ -21,42 +21,43 @@ static void	set_default_color(const char **lscolors, int i)
 	while (default_[i])
 	{
 		if (default_[i] != 'x')
-			lscolors[i] = g_ls_fcolor[INDEX_HASH(default_[i])];
+			g_lscolors[i] = g_ls_fcolor[INDEX_HASH(default_[i])];
 		else
-			lscolors[i] = NONE;
+			g_lscolors[i] = NONE;
 		++i;
 		if (default_[i] != 'x')
-			lscolors[i] = g_ls_bcolor[INDEX_HASH(default_[i])];
+			g_lscolors[i] = g_ls_bcolor[INDEX_HASH(default_[i])];
 		else
-			lscolors[i] = NONE;
+			g_lscolors[i] = NONE;
 		++i;
 	}
 }
 
-static void	set_color_env(const char **lscolors)
+static void	set_color_env(void)
 {
 	char	*env_var;
 	size_t	i;
 
-	env_var = getenv("LSCOLORS");
+	env_var = getenv("G_LSCOLORS");
 	i = 0;
-	while (env_var[i] && strchr(LSCOLORS_CHAR, env_var[i]))
-	{
-		if (env_var[i] != 'x')
-			lscolors[i] = g_ls_fcolor[INDEX_HASH(env_var[i])];
-		else
-			lscolors[i] = NONE;
-		++i;
-		if (!env_var[i] || !strchr(LSCOLORS_CHAR, env_var[i]))
-			break ;
-		if (env_var[i] != 'x')
-			lscolors[i] = g_ls_bcolor[INDEX_HASH(env_var[i])];
-		else
-			lscolors[i] = NONE;
-		++i;
-	}
+	if (env_var)
+		while (env_var[i] && strchr(G_LSCOLORS_CHAR, env_var[i]))
+		{
+			if (env_var[i] != 'x')
+				g_lscolors[i] = g_ls_fcolor[INDEX_HASH(env_var[i])];
+			else
+				g_lscolors[i] = NONE;
+			++i;
+			if (!env_var[i] || !strchr(G_LSCOLORS_CHAR, env_var[i]))
+				break ;
+			if (env_var[i] != 'x')
+				g_lscolors[i] = g_ls_bcolor[INDEX_HASH(env_var[i])];
+			else
+				g_lscolors[i] = NONE;
+			++i;
+		}
 	if (i != 22)
-		set_default_color(lscolors, i);
+		set_default_color(g_lscolors, i);
 }
 
 static int	color_mode(dev_t st_mode)
@@ -85,13 +86,10 @@ static int	color_mode(dev_t st_mode)
 
 void		set_color(t_file *file)
 {
-	static const char	*lscolors[22];
 	int					mode;
 
-	if (lscolors[0] == NULL)
-		set_color_env(lscolors);
 	if ((mode = color_mode(file->stat.st_mode)) == -1)
 		return ;
-	file->fcolor = lscolors[mode - 1];
-	file->bcolor = lscolors[mode];
+	file->fcolor = g_lscolors[mode - 1];
+	file->bcolor = g_lscolors[mode];
 }

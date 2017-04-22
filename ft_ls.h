@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 17:04:26 by jye               #+#    #+#             */
-/*   Updated: 2017/04/22 01:33:47 by root             ###   ########.fr       */
+/*   Updated: 2017/04/22 03:43:35 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,6 +181,8 @@ t_lst					*init_lst__(void *data);
 void					push_lst__(t_lst **node, void *data);
 void					pop_lst__(t_lst **node, void (*del)());
 void					append_lst__(t_lst *node, void *data);
+
+static const char		*g_lscolors[22];
 
 static const char		g_ls_fcolor[][12] = {"\e[30m", "\e[1m\e[30m",
 											 "\e[31m", "\e[1m\e[31m",
