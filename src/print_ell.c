@@ -6,7 +6,7 @@
 /*   By: jye <jye@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/18 17:44:24 by jye               #+#    #+#             */
-/*   Updated: 2017/04/22 21:33:20 by jye              ###   ########.fr       */
+/*   Updated: 2017/05/24 21:25:55 by jye              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ void	print_ell(t_cdir *cdir)
 	size_pad = intlen(cdir->size);
 	if (cdir->spe_ && size_pad < 9)
 		size_pad = 9;
-	if (cdir->cwd)
+	if (cwd_file)
 		ft_printf("total %lld\n", cdir->block);
 	while (cwd_file)
 	{
