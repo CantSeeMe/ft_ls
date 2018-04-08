@@ -10,6 +10,10 @@ PERFORMANCE
 
 It performs 5% worse on big folders, and 10% faster on small folders
 
+USAGE
+
+./ft_ls \[options...\] \[file...\]
+
 FLAGS
 
 The binary has been provided with the following flags: 
